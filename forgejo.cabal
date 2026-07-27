@@ -1,0 +1,99 @@
+cabal-version:   3.4
+name:            forgejo
+version:         0.1.0.0
+homepage:        https://github.com/uzinfocom-org/forgejo
+license:         BSD-3-Clause
+license-file:    LICENSE
+author:          lambdajon
+maintainer:      lambdajon, xfeusw 
+category:        Web
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common warnings
+  ghc-options: -Wall -Wunused-imports
+
+library
+  import:             warnings
+  hs-source-dirs:     src
+  exposed-modules:
+    Forgejo
+    Forgejo.API
+    Forgejo.API.CommitStatus
+    Forgejo.API.OrgMembers
+    Forgejo.API.PullRequest
+    Forgejo.App
+    Forgejo.Methods.CommitStatus
+    Forgejo.Methods.OrgMembers
+    Forgejo.Methods.PullRequest
+    Forgejo.Types.ActionRun
+    Forgejo.Types.Comment
+    Forgejo.Types.Commit
+    Forgejo.Types.Common
+    Forgejo.Types.Event
+    Forgejo.Types.EventType
+    Forgejo.Types.Issue
+    Forgejo.Types.IssueComment
+    Forgejo.Types.PullRequest
+    Forgejo.Types.Push
+    Forgejo.Types.Repository
+    Forgejo.Types.User
+    Forgejo.Webhook
+
+  build-depends:
+    , aeson
+    , base
+    , bytestring
+    , conduit
+    , conduit-combinators
+    , containers
+    , filepath
+    , generic-lens
+    , http-api-data
+    , http-client-tls
+    , http-media
+    , http-types
+    , lens
+    , monad-logger
+    , mtl
+    , named
+    , optparse-generic
+    , path-pieces
+    , safe-exceptions
+    , servant-client
+    , servant-client-core
+    , servant-server
+    , stm
+    , text
+    , time
+    , transformers
+    , uuid
+    , vector
+    , wai
+    , wai-extra
+    , warp
+
+  default-language:   GHC2024
+  default-extensions:
+    BlockArguments
+    DataKinds
+    DeriveAnyClass
+    DerivingStrategies
+    ImplicitParams
+    ImportQualifiedPost
+    LambdaCase
+    OverloadedRecordDot
+    RecordWildCards
+
+test-suite forgejo-test
+  import:           warnings
+  type:             exitcode-stdio-1.0
+  main-is:          Main.hs
+  hs-source-dirs:   test
+  build-depends:
+    , base
+    , forgejo
+    , hspec
+    , hspec-wai
+
+  default-language: GHC2021

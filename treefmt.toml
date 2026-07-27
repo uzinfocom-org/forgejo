@@ -1,0 +1,20 @@
+
+[formatter.haskell]
+command = "fourmolu"
+options = ["-i"]
+includes = [ "*.hs" ]
+excludes = []
+
+[formatter.cabal-fmt]
+command = "cabal-fmt"
+excludes = []
+includes = ["*.cabal"]
+options = ["-i"]
+
+# TODO: Need configure alejandra as nix formatter
+
+[formatter.alejandra]
+command = "alejandra"
+excludes = []
+includes = ["*.nix"]
+options = []
