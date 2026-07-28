@@ -5,7 +5,7 @@ homepage:        https://github.com/uzinfocom-org/forgejo
 license:         BSD-3-Clause
 license-file:    LICENSE
 author:          lambdajon
-maintainer:      lambdajon, xfeusw 
+maintainer:      lambdajon, xfeusw
 category:        Web
 build-type:      Simple
 extra-doc-files: CHANGELOG.md
@@ -20,24 +20,249 @@ library
     Forgejo
     Forgejo.API
     Forgejo.API.CommitStatus
+    Forgejo.API.Issue
+    Forgejo.API.Organization
     Forgejo.API.OrgMembers
     Forgejo.API.PullRequest
+    Forgejo.API.Repository
     Forgejo.App
     Forgejo.Methods.CommitStatus
+    Forgejo.Methods.Issue
+    Forgejo.Methods.Organization
     Forgejo.Methods.OrgMembers
     Forgejo.Methods.PullRequest
+    Forgejo.Methods.Repository
     Forgejo.Types.ActionRun
+    Forgejo.Types.ActionRunJob
+    Forgejo.Types.ActionRunner
+    Forgejo.Types.ActionTask
+    Forgejo.Types.ActionTaskResponse
+    Forgejo.Types.ActionVariable
+    Forgejo.Types.Activity
+    Forgejo.Types.ActivityPub
+    Forgejo.Types.AddCollaboratorOption
+    Forgejo.Types.AddTimeOption
+    Forgejo.Types.AnnotatedTag
+    Forgejo.Types.AnnotatedTagObject
+    Forgejo.Types.APIError
+    Forgejo.Types.APIForbiddenError
+    Forgejo.Types.APIInternalServerError
+    Forgejo.Types.APIInvalidTopicsError
+    Forgejo.Types.APINotFound
+    Forgejo.Types.APIRepoArchivedError
+    Forgejo.Types.APIUnauthorizedError
+    Forgejo.Types.APIValidationError
+    Forgejo.Types.Attachment
+    Forgejo.Types.BlockedUser
+    Forgejo.Types.Branch
+    Forgejo.Types.BranchProtection
+    Forgejo.Types.ChangedFile
+    Forgejo.Types.ChangeFileOperation
+    Forgejo.Types.ChangeFilesOptions
+    Forgejo.Types.CombinedStatus
     Forgejo.Types.Comment
     Forgejo.Types.Commit
+    Forgejo.Types.CommitAffectedFiles
+    Forgejo.Types.CommitDateOptions
+    Forgejo.Types.CommitMeta
+    Forgejo.Types.CommitStats
+    Forgejo.Types.CommitStatus
+    Forgejo.Types.CommitUser
     Forgejo.Types.Common
+    Forgejo.Types.Compare
+    Forgejo.Types.ContentsResponse
+    Forgejo.Types.CreateAccessTokenOption
+    Forgejo.Types.CreateBranchProtectionOption
+    Forgejo.Types.CreateBranchRepoOption
+    Forgejo.Types.CreateEmailOption
+    Forgejo.Types.CreateFileOptions
+    Forgejo.Types.CreateForkOption
+    Forgejo.Types.CreateGPGKeyOption
+    Forgejo.Types.CreateHookOption
+    Forgejo.Types.CreateIssueCommentOption
+    Forgejo.Types.CreateIssueOption
+    Forgejo.Types.CreateKeyOption
+    Forgejo.Types.CreateLabelOption
+    Forgejo.Types.CreateMilestoneOption
+    Forgejo.Types.CreateOAuth2ApplicationOptions
+    Forgejo.Types.CreateOrgOption
+    Forgejo.Types.CreateOrUpdateSecretOption
+    Forgejo.Types.CreatePullRequestOption
+    Forgejo.Types.CreatePullReviewComment
+    Forgejo.Types.CreatePullReviewCommentOptions
+    Forgejo.Types.CreatePullReviewOptions
+    Forgejo.Types.CreatePushMirrorOption
+    Forgejo.Types.CreateQuotaGroupOptions
+    Forgejo.Types.CreateQuotaRuleOptions
+    Forgejo.Types.CreateReleaseOption
+    Forgejo.Types.CreateRepositoryOption
+    Forgejo.Types.CreateStatusOption
+    Forgejo.Types.CreateTagOption
+    Forgejo.Types.CreateTagProtectionOption
+    Forgejo.Types.CreateTeamOption
+    Forgejo.Types.CreateUserOption
+    Forgejo.Types.CreateWikiPageOptions
+    Forgejo.Types.Cron
+    Forgejo.Types.DeleteEmailOption
+    Forgejo.Types.DeleteFileOptions
+    Forgejo.Types.DeleteLabelsOption
+    Forgejo.Types.DeployKey
+    Forgejo.Types.DismissPullReviewOptions
+    Forgejo.Types.DispatchWorkflowOption
+    Forgejo.Types.DispatchWorkflowRun
+    Forgejo.Types.EditAttachmentOptions
+    Forgejo.Types.EditBranchProtectionOption
+    Forgejo.Types.EditDeadlineOption
+    Forgejo.Types.EditGitHookOption
+    Forgejo.Types.EditHookOption
+    Forgejo.Types.EditIssueCommentOption
+    Forgejo.Types.EditIssueOption
+    Forgejo.Types.EditLabelOption
+    Forgejo.Types.EditMilestoneOption
+    Forgejo.Types.EditOrgOption
+    Forgejo.Types.EditPullRequestOption
+    Forgejo.Types.EditQuotaRuleOptions
+    Forgejo.Types.EditReactionOption
+    Forgejo.Types.EditReleaseOption
+    Forgejo.Types.EditRepoOption
+    Forgejo.Types.EditTagProtectionOption
+    Forgejo.Types.EditTeamOption
+    Forgejo.Types.EditUserOption
+    Forgejo.Types.Email
     Forgejo.Types.Event
     Forgejo.Types.EventType
+    Forgejo.Types.ExternalTracker
+    Forgejo.Types.ExternalWiki
+    Forgejo.Types.FileCommitResponse
+    Forgejo.Types.FileDeleteResponse
+    Forgejo.Types.FileLinksResponse
+    Forgejo.Types.FileResponse
+    Forgejo.Types.FilesResponse
+    Forgejo.Types.GeneralAPISettings
+    Forgejo.Types.GeneralAttachmentSettings
+    Forgejo.Types.GeneralRepoOption
+    Forgejo.Types.GeneralRepoSettings
+    Forgejo.Types.GeneralUISettings
+    Forgejo.Types.GitBlob
+    Forgejo.Types.GitEntry
+    Forgejo.Types.GitHook
+    Forgejo.Types.GitignoreTemplateInfo
+    Forgejo.Types.GitObject
+    Forgejo.Types.GitTreeResponse
+    Forgejo.Types.GPGKey
+    Forgejo.Types.GPGKeyEmail
+    Forgejo.Types.Hook
+    Forgejo.Types.Identity
+    Forgejo.Types.InternalTracker
     Forgejo.Types.Issue
     Forgejo.Types.IssueComment
+    Forgejo.Types.IssueConfig
+    Forgejo.Types.IssueConfigContactLink
+    Forgejo.Types.IssueConfigValidation
+    Forgejo.Types.IssueDeadline
+    Forgejo.Types.IssueFormField
+    Forgejo.Types.IssueLabelsOption
+    Forgejo.Types.IssueMeta
+    Forgejo.Types.IssueTemplate
+    Forgejo.Types.Label
+    Forgejo.Types.LabelTemplate
+    Forgejo.Types.LabelTemplateInfo
+    Forgejo.Types.LicensesTemplateListEntry
+    Forgejo.Types.ListActionRunResponse
+    Forgejo.Types.MarkdownOption
+    Forgejo.Types.MarkupOption
+    Forgejo.Types.MergePullRequestOption
+    Forgejo.Types.MigrationRepoOptions
+    Forgejo.Types.Milestone
+    Forgejo.Types.NewIssuePinsAllowed
+    Forgejo.Types.NodeInfo
+    Forgejo.Types.NodeInfoServices
+    Forgejo.Types.NodeInfoSoftware
+    Forgejo.Types.NodeInfoUsage
+    Forgejo.Types.NodeInfoUsageUsers
+    Forgejo.Types.Note
+    Forgejo.Types.NoteOptions
+    Forgejo.Types.NotificationCount
+    Forgejo.Types.NotificationSubject
+    Forgejo.Types.NotificationThread
+    Forgejo.Types.OAuth2Application
+    Forgejo.Types.Organization
+    Forgejo.Types.OrganizationPermissions
+    Forgejo.Types.Package
+    Forgejo.Types.PackageFile
+    Forgejo.Types.PayloadCommit
+    Forgejo.Types.PayloadCommitVerification
+    Forgejo.Types.PayloadUser
+    Forgejo.Types.Permission
+    Forgejo.Types.PRBranchInfo
+    Forgejo.Types.PublicKey
     Forgejo.Types.PullRequest
+    Forgejo.Types.PullRequestMeta
+    Forgejo.Types.PullReview
+    Forgejo.Types.PullReviewComment
+    Forgejo.Types.PullReviewRequestOptions
     Forgejo.Types.Push
+    Forgejo.Types.PushMirror
+    Forgejo.Types.QuotaGroup
+    Forgejo.Types.QuotaInfo
+    Forgejo.Types.QuotaRuleInfo
+    Forgejo.Types.QuotaUsed
+    Forgejo.Types.QuotaUsedArtifact
+    Forgejo.Types.QuotaUsedAttachment
+    Forgejo.Types.QuotaUsedPackage
+    Forgejo.Types.QuotaUsedSize
+    Forgejo.Types.QuotaUsedSizeAssets
+    Forgejo.Types.QuotaUsedSizeAssetsAttachments
+    Forgejo.Types.QuotaUsedSizeAssetsPackages
+    Forgejo.Types.QuotaUsedSizeGit
+    Forgejo.Types.QuotaUsedSizeRepos
+    Forgejo.Types.Reaction
+    Forgejo.Types.Reference
+    Forgejo.Types.RegisterRunnerOptions
+    Forgejo.Types.RegisterRunnerResponse
+    Forgejo.Types.RegistrationToken
+    Forgejo.Types.Release
+    Forgejo.Types.RenameOrgOption
+    Forgejo.Types.RenameUserOption
+    Forgejo.Types.ReplaceFlagsOption
+    Forgejo.Types.RepoCollaboratorPermission
+    Forgejo.Types.RepoCommit
     Forgejo.Types.Repository
+    Forgejo.Types.RepositoryMeta
+    Forgejo.Types.RepoTargetOption
+    Forgejo.Types.RepoTopicOptions
+    Forgejo.Types.RepoTransfer
+    Forgejo.Types.SearchResults
+    Forgejo.Types.Secret
+    Forgejo.Types.ServerVersion
+    Forgejo.Types.SetUserQuotaGroupsOptions
+    Forgejo.Types.StopWatch
+    Forgejo.Types.SubmitPullReviewOptions
+    Forgejo.Types.SyncForkInfo
+    Forgejo.Types.Tag
+    Forgejo.Types.TagArchiveDownloadCount
+    Forgejo.Types.TagProtection
+    Forgejo.Types.Team
+    Forgejo.Types.TimelineComment
+    Forgejo.Types.TopicName
+    Forgejo.Types.TopicResponse
+    Forgejo.Types.TrackedTime
+    Forgejo.Types.TransferRepoOption
+    Forgejo.Types.UpdateBranchRepoOption
+    Forgejo.Types.UpdateFileOptions
+    Forgejo.Types.UpdateRepoAvatarOption
+    Forgejo.Types.UpdateUserAvatarOption
+    Forgejo.Types.UpdateVariableOption
     Forgejo.Types.User
+    Forgejo.Types.UserHeatmapData
+    Forgejo.Types.UserSettings
+    Forgejo.Types.UserSettingsOptions
+    Forgejo.Types.VerifyGPGKeyOption
+    Forgejo.Types.WatchInfo
+    Forgejo.Types.WikiCommit
+    Forgejo.Types.WikiCommitList
+    Forgejo.Types.WikiPage
+    Forgejo.Types.WikiPageMetaData
     Forgejo.Webhook
 
   build-depends:
