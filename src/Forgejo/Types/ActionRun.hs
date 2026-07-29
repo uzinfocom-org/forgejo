@@ -17,33 +17,33 @@ import GHC.Generics (Generic)
 arpOptions :: Options
 arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+arOptions :: Options
+arOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 2}
 
 data ActionRun = ActionRun
-  { runId :: RunId
-  , runTitle :: Text
-  , runRepository :: Repository
-  , runWorkflowId :: Text
-  , runIndexInRepo :: Int
-  , runTriggerUser :: User
-  , runScheduleId :: ScheduleId
-  , runPrettyref :: Text
-  , runIsRefDeleted :: Bool
-  , runCommitSha :: Text
-  , runIsForkPullRequest :: Bool
-  , runNeedApproval :: Bool
-  , runApprovedBy :: UserId
-  , runEvent :: Text
-  , runEventPayload :: Text
-  , runTriggerEvent :: Text
-  , runStatus :: Text
-  , runStarted :: UTCTime
-  , runStopped :: UTCTime
-  , runCreated :: UTCTime
-  , runUpdated :: UTCTime
-  , runDuration :: Int
-  , runHtmlUrl :: Text
+  { arScheduleId :: ScheduleId
+  , arApprovedBy :: UserId
+  , arCommitSha :: Text
+  , arCreated :: UTCTime
+  , arDuration :: Int
+  , arEvent :: Text
+  , arEventPayload :: Text
+  , arHtmlUrl :: Text
+  , arId :: RunId
+  , arIndexInRepo :: Int
+  , arIsForkPullRequest :: Bool
+  , arIsRefDeleted :: Bool
+  , arNeedApproval :: Bool
+  , arPrettyref :: Text
+  , arRepository :: Repository
+  , arStarted :: UTCTime
+  , arStatus :: Text
+  , arStopped :: UTCTime
+  , arTitle :: Text
+  , arTriggerEvent :: Text
+  , arTriggerUser :: User
+  , arUpdated :: UTCTime
+  , arWorkflowId :: Text
   }
   deriving stock (Eq, Generic, Show)
 
@@ -76,7 +76,7 @@ instance FromJSON ActionRun where
       <*> o .: "html_url"
 
 instance ToJSON ActionRun where
-  toJSON = genericToJSON runOptions
+  toJSON = genericToJSON arOptions
 
 data ActionRunPayload = ActionRunPayload
   { arpAction :: Text
