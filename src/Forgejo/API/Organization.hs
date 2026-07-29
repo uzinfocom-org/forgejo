@@ -11,7 +11,7 @@ module Forgejo.API.Organization
 	data OrgRoutes route = OrgRoutes
 	  { createOrgRepositoryApi
 	      :: route
-	        :- "orgs"
+	        :- "org"
 	          :> Capture "org" Text
 						:> "repos"
 	          :> ReqBody '[JSON] CreateRepositoryOption
