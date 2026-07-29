@@ -13,6 +13,7 @@ module Forgejo.API.Organization
 	      :: route
 	        :- "orgs"
 	          :> Capture "org" Text
+						:> "repos"
 	          :> ReqBody '[JSON] CreateRepositoryOption
 	          :> Post '[JSON] [Repository]
 	  -- ^ POST /orgs/{org}/repos
