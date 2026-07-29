@@ -9,9 +9,6 @@ import Forgejo.Types.CreateRepositoryOption (CreateOrgRepositoryOption (..))
 import Forgejo.Types.Repository (Repository)
 
 createOrgRepository :: CreateOrgRepositoryOption -> (AppM [Repository])
-createOrgRepository c = do
+createOrgRepository CreateOrgRepositoryOption{..} = do
   fg <- forgejo
-  createOrgRepositoryApi (orgs fg) owner apiJson
- where
-  owner = c.coroOwner
-  apiJson = c.coroApiJson
+  createOrgRepositoryApi (orgs fg) coroOwner coroApiJson

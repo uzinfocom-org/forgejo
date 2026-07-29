@@ -11,10 +11,6 @@ import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.Issue (Issue)
 
 createIssue :: CreateIssueOption -> AppM [Issue]
-createIssue c = do
+createIssue CreateIssueOption{..} = do
   fg <- forgejo
-  createIssueApi (issues fg) owner repo apiJson
- where
-  owner = c.cioOwner
-  repo = c.cioRepo
-  apiJson = c.cioApiJson
+  createIssueApi (issues fg) cioOwner cioRepo cioApiJson
