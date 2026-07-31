@@ -13,7 +13,7 @@ userOptions :: Options
 userOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
 
 data User = User
-  { userId :: UserId
+  { userId :: Int
   , userLogin :: Text
   , userLoginName :: Text
   , userSourceId :: SourceId

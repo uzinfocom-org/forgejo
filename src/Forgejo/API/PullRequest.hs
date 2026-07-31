@@ -1,6 +1,6 @@
 module Forgejo.API.PullRequest
   ( PullRequestRoutes (..)
-  , PullReviewRequestOptions (..)
+  , PullReviewRequestApiOptions (..)
   , PullReviewRequest (..)
   ) where
 
@@ -20,18 +20,18 @@ data PullRequestRoutes route = PullRequestRoutes
           :> "pulls"
           :> Capture "index" Int
           :> "requested_reviewers"
-          :> ReqBody '[JSON] PullReviewRequestOptions
+          :> ReqBody '[JSON] PullReviewRequestApiOptions
           :> Post '[JSON] [PullReviewRequest]
   }
   deriving (Generic)
 
-data PullReviewRequestOptions = PullReviewRequestOptions
+data PullReviewRequestApiOptions = PullReviewRequestApiOptions
   { reviewers :: [Text]
   , teamReviewers :: [Text]
   }
   deriving stock (Eq, Generic, Show)
 
-instance ToJSON PullReviewRequestOptions where
+instance ToJSON PullReviewRequestApiOptions where
   toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_'}
 
 newtype PullReviewRequest = PullReviewRequest

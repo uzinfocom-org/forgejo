@@ -38,7 +38,7 @@ instance ToJSON PRBranch where
   toJSON = genericToJSON branchOptions
 
 data PullRequest = PullRequest
-  { prId :: PullRequestId
+  { prId :: Int
   , prUrl :: Text
   , prNumber :: Int
   , prUser :: User
