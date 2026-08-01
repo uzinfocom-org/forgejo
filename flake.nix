@@ -4,12 +4,15 @@
   inputs = {
     dream2nix.url = "github:lambdajon/dream2nix";
     nixpkgs.follows = "dream2nix/nixpkgs";
+
+     git-hooks.url = "github:cachix/git-hooks.nix";
   };
 
   outputs = {
     self,
     dream2nix,
     nixpkgs,
+    git-hooks
   }: let
     systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     eachSystem = nixpkgs.lib.genAttrs systems;
@@ -27,6 +30,23 @@
         ];
       };
     });
+
+    checks = eachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        pre-commit = git-hooks.lib.${system}.run {
+          src = ./.;
+
+          hooks = {
+            treefmt = {
+              enable = true;
+              package = pkgs.treefmt;
+            };
+          };
+        };
+      }
+    );
 
     devShells = eachSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
@@ -66,9 +86,14 @@
 
           pkgs.jq
           pkgs.just
-        ];
+        ]
+        ++ self.checks.${system}.pre-commit.enabledPackages;
 
         shellHook = ''
+          echo "Welcome to Forgejo dev shell"
+
+          ${self.checks.${system}.pre-commit.shellHook}
+
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.postgresql}/lib
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.libzip}/lib
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.bzip2}/lib
