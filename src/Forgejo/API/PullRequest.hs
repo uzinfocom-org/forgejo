@@ -7,6 +7,8 @@ module Forgejo.API.PullRequest
 import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
+import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
+import Forgejo.Types.PullRequest (PullRequest)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 import Servant (Capture, JSON, Post, ReqBody, type (:-), type (:>))
@@ -22,6 +24,14 @@ data PullRequestRoutes route = PullRequestRoutes
           :> "requested_reviewers"
           :> ReqBody '[JSON] PullReviewRequestApiOptions
           :> Post '[JSON] [PullReviewRequest]
+  , createPullRequestApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "pulls"
+          :> ReqBody '[JSON] CreatePullRequestOption
+          :> Post '[JSON] PullRequest
   }
   deriving (Generic)
 
