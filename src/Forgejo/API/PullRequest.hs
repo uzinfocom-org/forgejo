@@ -11,7 +11,7 @@ import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
 import Forgejo.Types.PullRequest (PullRequest)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
-import Servant (Capture, JSON, Post, ReqBody, type (:-), type (:>))
+import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
 
 data PullRequestRoutes route = PullRequestRoutes
   { requestedReviews
@@ -23,7 +23,7 @@ data PullRequestRoutes route = PullRequestRoutes
           :> Capture "index" Int
           :> "requested_reviewers"
           :> ReqBody '[JSON] PullReviewRequestApiOptions
-          :> Post '[JSON] [PullReviewRequest]
+          :> PostCreated '[JSON] [PullReviewRequest]
   , createPullRequestApi
       :: route
         :- "repos"
@@ -31,7 +31,7 @@ data PullRequestRoutes route = PullRequestRoutes
           :> Capture "repo" Text
           :> "pulls"
           :> ReqBody '[JSON] CreatePullRequestOption
-          :> Post '[JSON] PullRequest
+          :> PostCreated '[JSON] PullRequest
   }
   deriving (Generic)
 
