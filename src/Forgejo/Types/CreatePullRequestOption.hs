@@ -1,4 +1,4 @@
-module Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption) where
+module Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption (..)) where
 
 import Data.Aeson (ToJSON (..), genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
@@ -7,15 +7,15 @@ import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
 data CreatePullRequestOption = CreatePullRequestOption
-  { assignee :: Maybe Text
-  , assignees :: Maybe [Text]
-  , base :: Text
-  , body :: Maybe Text
-  , dueDate :: Maybe UTCTime
-  , head :: Text
-  , labels :: Maybe [Int]
-  , milestone :: Maybe Int
-  , title :: Text
+  { cproAssignee :: Maybe Text
+  , cproAssignees :: Maybe [Text]
+  , cproBase :: Text
+  , cproBody :: Maybe Text
+  , cproDueDate :: Maybe UTCTime
+  , cproHead :: Text
+  , cproLabels :: Maybe [Int]
+  , cproMilestone :: Maybe Int
+  , cproTitle :: Text
   }
   deriving stock (Eq, Generic, Show)
 
