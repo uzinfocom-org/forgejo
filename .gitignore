@@ -27,3 +27,4 @@ cabal.project.local~
 .ghc.environment.*
 config.toml
 tmp/
+.pre-commit-config.yaml
