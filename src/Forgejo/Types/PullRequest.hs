@@ -9,6 +9,7 @@ import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Forgejo.Types.Common (PullRequestId, RepoId)
+import Forgejo.Types.Label (Label)
 import Forgejo.Types.Repository (Repository)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
@@ -44,7 +45,7 @@ data PullRequest = PullRequest
   , prUser :: User
   , prTitle :: Text
   , prBody :: Text
-  , prLabels :: [Value]
+  , prLabels :: [Label]
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
   , prAssignees :: Maybe [User]
