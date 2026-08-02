@@ -1,14 +1,16 @@
-module Forgejo.Methods.PullRequest (PullReviewRequestOptions (..), addReviewer)
+module Forgejo.Methods.PullRequest (PullReviewRequestOptions (..), addReviewer, createPullRequest)
 where
 
 import Data.Text (Text)
 import Forgejo.API (ForgejoRoutes (pulls))
 import Forgejo.API.PullRequest
-  ( PullRequestRoutes (requestedReviews)
+  ( PullRequestRoutes (createPullRequestApi, requestedReviews)
   , PullReviewRequest
   , PullReviewRequestApiOptions (..)
   )
 import Forgejo.App (AppM, forgejo)
+import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
+import Forgejo.Types.PullRequest (PullRequest)
 import GHC.Generics (Generic)
 
 data PullReviewRequestOptions = PullReviewRequestOptions
@@ -19,6 +21,11 @@ data PullReviewRequestOptions = PullReviewRequestOptions
   , teamReviewers :: [Text]
   }
   deriving (Eq, Generic, Show)
+
+createPullRequest :: Text -> Text -> CreatePullRequestOption -> AppM PullRequest
+createPullRequest owner repo opts = do
+  fg <- forgejo
+  createPullRequestApi (pulls fg) owner repo opts
 
 addReviewer :: PullReviewRequestOptions -> AppM [PullReviewRequest]
 addReviewer PullReviewRequestOptions{..} = do
