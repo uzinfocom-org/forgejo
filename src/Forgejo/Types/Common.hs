@@ -10,6 +10,8 @@ module Forgejo.Types.Common
   , RunId (..)
   , ScheduleId (..)
   , PullRequestId (..)
+  , LabelId (..)
+  , MilestoneId (..)
   ) where
 
 import Data.Aeson (FromJSON, ToJSON)
@@ -45,5 +47,13 @@ newtype ScheduleId = ScheduleId Int64
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)
 
 newtype PullRequestId = PullRequestId Int64
+  deriving stock (Eq, Show)
+  deriving newtype (FromJSON, ToHttpApiData, ToJSON)
+
+newtype LabelId = LabelId Int64
+  deriving stock (Eq, Show)
+  deriving newtype (FromJSON, ToHttpApiData, ToJSON)
+
+newtype MilestoneId = MilestoneId Int64
   deriving stock (Eq, Show)
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)
