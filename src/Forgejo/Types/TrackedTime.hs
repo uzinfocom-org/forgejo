@@ -14,12 +14,6 @@ import Data.Time (UTCTime)
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 
-arpOptions :: Options
-arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
-
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
-
 data TrackedTime = TrackedTime
   { created :: UTCTime
   , id :: Int
@@ -29,7 +23,6 @@ data TrackedTime = TrackedTime
   }
   deriving stock (Eq, Generic, Show)
 
--- Manual instance because Forgejo uses "ScheduleID" (capitalised) as the JSON key.
 instance FromJSON TrackedTime where
   parseJSON = withObject "TrackedTime" $ \o ->
     TrackedTime
@@ -52,6 +45,3 @@ instance FromJSON TrackedTimePayload where
       <$> o .: "action"
       <*> o .: "run"
       <*> o .: "prior_status"
-
-instance ToJSON TrackedTimePayload where
-  toJSON = genericToJSON arpOptions
