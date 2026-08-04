@@ -21,7 +21,7 @@ data CreateIssueOption = CreateIssueOption
 
 data CreateIssueApiOption = CreateIssueApiOption
   { ciaoTitle :: Text
-  , ciaoBody :: Text
+  , ciaoBody :: Maybe Text
   }
   deriving stock (Eq, Generic, Show)
 

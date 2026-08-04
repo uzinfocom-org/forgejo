@@ -6,7 +6,7 @@ import Data.Text (Text)
 import Forgejo.Types.CreateIssueOption (CreateIssueApiOption)
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
-import Servant (Capture, JSON, Post, ReqBody, type (:-), type (:>))
+import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
 
 data IssueRoutes route = IssueRoutes
   { createIssueApi
@@ -16,7 +16,7 @@ data IssueRoutes route = IssueRoutes
           :> Capture "repo" Text
           :> "issues"
           :> ReqBody '[JSON] CreateIssueApiOption
-          :> Post '[JSON] [Issue]
+          :> PostCreated '[JSON] [Issue]
   -- ^ POST /repos/{owner}/{repo}/issues
   }
   deriving (Generic)
