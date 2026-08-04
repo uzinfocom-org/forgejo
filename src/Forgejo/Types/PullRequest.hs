@@ -49,8 +49,8 @@ data PullRequest = PullRequest
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
   , prAssignees :: [User]
-  , prRequestedReviewers :: [Value]
-  , prRequestedReviewersTeams :: [Value]
+  , prRequestedReviewers :: [User]
+  , prRequestedReviewersTeams :: [Team]
   , prState :: Text
   , prDraft :: Bool
   , prIsLocked :: Bool
