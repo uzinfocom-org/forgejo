@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Forgejo.Types.PullRequest
   ( PRBranch (..)
   , PullRequest (..)
@@ -5,12 +7,15 @@ module Forgejo.Types.PullRequest
   ) where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), Value, genericParseJSON, genericToJSON)
+import Data.Aeson qualified as AE
+import Data.Aeson.Encoding qualified as AE
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Forgejo.Types.Common (PullRequestId, RepoId)
 import Forgejo.Types.Label (Label)
 import Forgejo.Types.Repository (Repository)
+import Forgejo.Types.Team (Team)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
@@ -87,7 +92,7 @@ instance ToJSON PullRequest where
   toJSON = genericToJSON prOptions
 
 data PullRequestPayload = PullRequestPayload
-  { prpAction :: Text
+  { prpAction :: HookPullRequestAcion
   , prpNumber :: Int
   , prpPullRequest :: PullRequest
   , prpRequestedReviewer :: Maybe User
@@ -97,6 +102,27 @@ data PullRequestPayload = PullRequestPayload
   , prpReview :: Maybe Value
   }
   deriving stock (Eq, Generic, Show)
+
+data HookPullRequestAcion = PrOpened | PrClosed | PrReOpened | PrOther Text
+  deriving stock (Eq, Generic, Show)
+
+instance FromJSON HookPullRequestAcion where
+  parseJSON =
+    AE.withText "HookPullRequestAcion"
+      $ pure . \case
+        "opened" -> PrOpened
+        "closed" -> PrClosed
+        "reopened" -> PrReOpened
+        x -> PrOther x
+
+instance ToJSON HookPullRequestAcion where
+  toJSON = AE.String . fromTaggedHook
+  toEncoding = AE.text . fromTaggedHook
+fromTaggedHook = \case
+  PrOpened -> "opened"
+  PrClosed -> "closed"
+  PrReOpened -> "reopened"
+  PrOther t -> t
 
 instance FromJSON PullRequestPayload where
   parseJSON = genericParseJSON prpOptions
