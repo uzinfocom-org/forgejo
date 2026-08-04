@@ -69,6 +69,7 @@
             hp.hlint
             hp.ghcid
             hp.implicit-hie
+            # pkgs.haskellPackages.cabal-hoogle
             pkgs.haskellPackages.cabal-fmt
             pkgs.pkg-config
             pkgs.zlib
