@@ -26,7 +26,7 @@ data CreateIssueApiOption = CreateIssueApiOption
   { ciaoTitle :: Text
   , ciaoBody :: Maybe Text
   , ciaoAssignee :: Maybe User
-  , ciaoAssigness :: Maybe [User]
+  , ciaoAssigness :: [User]
   , ciaoClosed :: Maybe Bool
   , ciaoDueDate :: Maybe UTCTime
   , ciaoLabels :: Maybe LabelId
