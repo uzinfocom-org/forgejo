@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
 
 module Forgejo.Types.PullRequest
   ( PRBranch (..)
@@ -103,7 +104,11 @@ data PullRequestPayload = PullRequestPayload
   }
   deriving stock (Eq, Generic, Show)
 
-data HookPullRequestAcion = PrOpened | PrClosed | PrReOpened | PrOther Text
+data HookPullRequestAcion
+  = PrOpened
+  | PrClosed
+  | PrReOpened
+  | PrOther Text -- unhandled action
   deriving stock (Eq, Generic, Show)
 
 instance FromJSON HookPullRequestAcion where
