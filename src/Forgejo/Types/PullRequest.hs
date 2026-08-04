@@ -48,7 +48,7 @@ data PullRequest = PullRequest
   , prLabels :: [Label]
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
-  , prAssignees :: Maybe [User]
+  , prAssignees :: [User]
   , prRequestedReviewers :: [Value]
   , prRequestedReviewersTeams :: [Value]
   , prState :: Text
