@@ -28,6 +28,3 @@ data IssueCommentPayload = IssueCommentPayload
 
 instance FromJSON IssueCommentPayload where
   parseJSON = genericParseJSON icOptions
-
-instance ToJSON IssueCommentPayload where
-  toJSON = genericToJSON icOptions

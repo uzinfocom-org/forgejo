@@ -67,9 +67,6 @@ instance FromJSON Release where
       <*> o .: "url"
       <*> o .: "zipball_url"
 
-instance ToJSON Release where
-  toJSON = genericToJSON runOptions
-
 data ReleasePayload = ReleasePayload
   { arpAction :: Text
   , arpRun :: Release
@@ -83,6 +80,3 @@ instance FromJSON ReleasePayload where
       <$> o .: "action"
       <*> o .: "run"
       <*> o .: "prior_status"
-
-instance ToJSON ReleasePayload where
-  toJSON = genericToJSON arpOptions

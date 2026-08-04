@@ -8,7 +8,10 @@ import Data.Aeson (FromJSON (..), ToJSON (..), Value, genericParseJSON, genericT
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Forgejo.Types.Attachment (Attachment)
 import Forgejo.Types.Common (IssueId, RepoId, UserId)
+import Forgejo.Types.Label (Label)
+import Forgejo.Types.Milestone (Milestone)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
@@ -62,11 +65,11 @@ data Issue = Issue
   , issueTitle :: Text
   , issueBody :: Text
   , issueRef :: Text
-  , issueAssets :: [Value]
-  , issueLabels :: [Value]
-  , issueMilestone :: Maybe Value
-  , issueAssignee :: Maybe Value
-  , issueAssignees :: Maybe [Value]
+  , issueAssets :: [Attachment]
+  , issueLabels :: [Label]
+  , issueMilestone :: Maybe Milestone
+  , issueAssignee :: Maybe User
+  , issueAssignees :: Maybe [User]
   , issueState :: Text
   , issueIsLocked :: Bool
   , issueComments :: Int
@@ -82,6 +85,3 @@ data Issue = Issue
 
 instance FromJSON Issue where
   parseJSON = genericParseJSON issueOptions
-
-instance ToJSON Issue where
-  toJSON = genericToJSON issueOptions

@@ -39,9 +39,6 @@ instance FromJSON TrackedTime where
       <*> o .: "topic_name"
       <*> o .: "updated"
 
-instance ToJSON TrackedTime where
-  toJSON = genericToJSON runOptions
-
 data TrackedTimePayload = TrackedTimePayload
   { arpAction :: Text
   , arpRun :: TrackedTime
