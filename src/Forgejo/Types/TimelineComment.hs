@@ -6,8 +6,7 @@ module Forgejo.Types.TimelineComment
   ( TimelineComment (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
-import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
+import Data.Aeson (FromJSON, parseJSON, withObject, (.:))
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Forgejo.Types.Comment (Comment)
