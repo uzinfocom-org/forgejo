@@ -3,16 +3,16 @@
 
   inputs = {
     dream2nix.url = "github:lambdajon/dream2nix";
-    nixpkgs.follows = "dream2nix/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-     git-hooks.url = "github:cachix/git-hooks.nix";
+    git-hooks.url = "github:cachix/git-hooks.nix";
   };
 
   outputs = {
     self,
     dream2nix,
     nixpkgs,
-    git-hooks
+    git-hooks,
   }: let
     systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
     eachSystem = nixpkgs.lib.genAttrs systems;
@@ -50,44 +50,44 @@
 
     devShells = eachSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      # hp = pkgs.haskell.packages.ghc912;
       hlib = pkgs.haskell.lib;
       hp = pkgs.haskell.packages."ghc912".override {
         overrides = self: super: {
           brick = hlib.dontCheck (hlib.doJailbreak super.brick);
-          # cabal-install = hlib.dontCheck (hlib.doJailbreak super.cabal-install);
         };
       };
     in {
       default = pkgs.mkShell {
-        nativeBuildInputs = [
-          pkgs.cabal-install
-          hp.ghc
-          hp.haskell-language-server
-          hp.fourmolu
-          hp.hlint
-          hp.ghcid
-          hp.implicit-hie
-          pkgs.haskellPackages.cabal-fmt
-          pkgs.pkg-config
-          pkgs.zlib
-          pkgs.zlib.dev
-          pkgs.bzip2
-          pkgs.bzip2.dev
-          pkgs.libzip
-          pkgs.libpq
-          pkgs.libpq.dev
+        nativeBuildInputs =
+          [
+            pkgs.cabal-install
+            hp.cabal-hoogle
+            hp.ghc
+            hp.haskell-language-server
+            hp.fourmolu
+            hp.hlint
+            hp.ghcid
+            hp.implicit-hie
+            pkgs.haskellPackages.cabal-fmt
+            pkgs.pkg-config
+            pkgs.zlib
+            pkgs.zlib.dev
+            pkgs.bzip2
+            pkgs.bzip2.dev
+            pkgs.libzip
+            pkgs.libpq
+            pkgs.libpq.dev
 
-          pkgs.nixd
-          pkgs.statix
-          pkgs.deadnix
-          pkgs.treefmt
-          pkgs.alejandra
+            pkgs.nixd
+            pkgs.statix
+            pkgs.deadnix
+            pkgs.treefmt
+            pkgs.alejandra
 
-          pkgs.jq
-          pkgs.just
-        ]
-        ++ self.checks.${system}.pre-commit.enabledPackages;
+            pkgs.jq
+            pkgs.just
+          ]
+          ++ self.checks.${system}.pre-commit.enabledPackages;
 
         shellHook = ''
           echo "Welcome to Forgejo dev shell"
