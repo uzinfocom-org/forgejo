@@ -30,13 +30,15 @@ data HType
   | Feishu
   | Wechatwork
   | Packagist
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data CreateHookOptionConfig = CreateHookOptionConfig
   { contentType :: Text
   , url :: Text
   }
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data CreateHookOption = CreateHookOption
   { active :: Bool

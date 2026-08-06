@@ -15,4 +15,4 @@ data RepoRoutes route = RepoRoutes
           :> Post '[JSON] [Repository]
   -- ^ POST /user/repos
   }
-  deriving (Generic)
+  deriving stock (Generic)

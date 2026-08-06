@@ -18,4 +18,4 @@ data OrgRoutes route = OrgRoutes
           :> Post '[JSON] [Repository]
   -- ^ POST /orgs/{org}/repos
   }
-  deriving (Generic)
+  deriving stock (Generic)
