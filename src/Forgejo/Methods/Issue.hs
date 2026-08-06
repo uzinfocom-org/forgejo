@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedRecordDot #-}
-
 module Forgejo.Methods.Issue
   ( createIssue
   ) where

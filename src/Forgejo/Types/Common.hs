@@ -30,6 +30,7 @@ newtype RepoId = RepoId Int64
   deriving stock (Eq, Show)
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)
 
+-- | Wrapped type for id of 'Issue'
 newtype IssueId = IssueId Int64
   deriving stock (Eq, Show)
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)

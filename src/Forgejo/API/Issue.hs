@@ -1,3 +1,4 @@
+{- HLINT ignore "Use newtype instead of data" -}
 module Forgejo.API.Issue
   ( IssueRoutes (..)
   ) where

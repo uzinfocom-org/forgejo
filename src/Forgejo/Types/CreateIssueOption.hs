@@ -1,6 +1,4 @@
-{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
 
 module Forgejo.Types.CreateIssueOption
   ( CreateIssueOption (..)
@@ -15,6 +13,7 @@ import Forgejo.Types.Common (LabelId (..), MilestoneId (..))
 import Forgejo.Types.User (User (..))
 import GHC.Generics (Generic)
 
+-- | This type is used as argument for function 'createIssue'
 data CreateIssueOption = CreateIssueOption
   { cioOwner :: Text
   , cioRepo :: Text
@@ -22,6 +21,7 @@ data CreateIssueOption = CreateIssueOption
   }
   deriving stock (Eq, Generic, Show)
 
+-- | This type is used as argument for body of endpoint 'createIssueApi'
 data CreateIssueApiOption = CreateIssueApiOption
   { ciaoTitle :: Text
   , ciaoBody :: Maybe Text

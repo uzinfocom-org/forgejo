@@ -54,6 +54,7 @@ instance FromJSON IssueRepository where
 instance ToJSON IssueRepository where
   toJSON = genericToJSON issueRepoOptions
 
+-- | This type is used for the body of issues from Forgejo
 data Issue = Issue
   { issueId :: IssueId
   , issueUrl :: Text
@@ -69,7 +70,7 @@ data Issue = Issue
   , issueLabels :: [Label]
   , issueMilestone :: Maybe Milestone
   , issueAssignee :: Maybe User
-  , issueAssignees :: Maybe [User]
+  , issueAssignees :: [User]
   , issueState :: Text
   , issueIsLocked :: Bool
   , issueComments :: Int
