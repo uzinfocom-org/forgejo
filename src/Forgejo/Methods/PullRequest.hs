@@ -4,7 +4,7 @@ where
 import Data.Text (Text)
 import Forgejo.API (ForgejoRoutes (pulls))
 import Forgejo.API.PullRequest
-  ( PullRequestRoutes (createPullRequestApi, requestedReviews)
+  ( PullRequestRoutes (createPullRequestApi, requestReviewsApi)
   , PullReviewRequest
   , PullReviewRequestApiOptions (..)
   )
@@ -30,4 +30,4 @@ createPullRequest owner repo opts = do
 addReviewer :: PullReviewRequestOptions -> AppM [PullReviewRequest]
 addReviewer PullReviewRequestOptions{..} = do
   fg <- forgejo
-  requestedReviews (pulls fg) owner repo index $ PullReviewRequestApiOptions reviewers teamReviewers
+  requestReviewsApi (pulls fg) owner repo index $ PullReviewRequestApiOptions reviewers teamReviewers

@@ -4,18 +4,20 @@ import Data.Aeson (ToJSON (..), genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Forgejo.Types.Common (LabelId, MilestoneId)
+import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
 data CreatePullRequestOption = CreatePullRequestOption
   { cproTitle :: Text
   , cproHead :: Text
   , cproBase :: Text
-  , cproAssignee :: Maybe Text
-  , cproAssignees :: Maybe [Text]
+  , cproAssignee :: Maybe User
+  , cproAssignees :: [User]
   , cproBody :: Maybe Text
   , cproDueDate :: Maybe UTCTime
-  , cproLabels :: Maybe [Int]
-  , cproMilestone :: Maybe Int
+  , cproLabels :: [LabelId]
+  , cproMilestone :: Maybe MilestoneId
   }
   deriving stock (Eq, Generic, Show)
 
