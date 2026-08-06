@@ -23,7 +23,7 @@ data PullRequestRoutes route = PullRequestRoutes
           :> ReqBody '[JSON] PullReviewRequestApiOptions
           :> Post '[JSON] [PullReviewRequest]
   }
-  deriving (Generic)
+  deriving stock (Generic)
 
 data PullReviewRequestApiOptions = PullReviewRequestApiOptions
   { reviewers :: [Text]

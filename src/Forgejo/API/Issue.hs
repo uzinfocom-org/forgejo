@@ -1,4 +1,3 @@
-{- HLINT ignore "Use newtype instead of data" -}
 module Forgejo.API.Issue
   ( IssueRoutes (..)
   ) where
@@ -9,7 +8,7 @@ import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
 
-data IssueRoutes route = IssueRoutes
+newtype IssueRoutes route = IssueRoutes
   { createIssueApi
       :: route
         :- "repos"
@@ -20,4 +19,4 @@ data IssueRoutes route = IssueRoutes
           :> PostCreated '[JSON] [Issue]
   -- ^ POST /repos/{owner}/{repo}/issues
   }
-  deriving (Generic)
+  deriving stock (Generic)

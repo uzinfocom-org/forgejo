@@ -16,7 +16,8 @@ aOptions :: Options
 aOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
 data AttachmentType = Attachmentt | External
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data Attachment = Attachment
   { aBrowserDownloadUrl :: Text

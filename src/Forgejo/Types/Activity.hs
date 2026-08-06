@@ -50,7 +50,8 @@ data OpType
   | PullReviewDismissed
   | PullRequestReadyForReview
   | AutoMergePullRequest
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data Activity = Activity
   { aActUser :: User

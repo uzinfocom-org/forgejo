@@ -20,7 +20,8 @@ runOptions :: Options
 runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
 data State = Open | Closed
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data CreateMilestoneOption = CreateMilestoneOption
   { description :: Text

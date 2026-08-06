@@ -19,7 +19,8 @@ runOptions :: Options
 runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
 data Operation = Create | Update | Delete
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data ChangeFileOperation = ChangeFileOperation
   { content :: Text

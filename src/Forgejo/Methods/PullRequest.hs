@@ -18,7 +18,7 @@ data PullReviewRequestOptions = PullReviewRequestOptions
   , reviewers :: [Text]
   , teamReviewers :: [Text]
   }
-  deriving (Eq, Generic, Show)
+  deriving stock (Eq, Generic, Show)
 
 addReviewer :: PullReviewRequestOptions -> AppM [PullReviewRequest]
 addReviewer PullReviewRequestOptions{..} = do
