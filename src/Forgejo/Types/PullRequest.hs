@@ -104,11 +104,12 @@ data PullRequestPayload = PullRequestPayload
   }
   deriving stock (Eq, Generic, Show)
 
+-- TODO: We need to implement all types of hooks inspired from - https://github.com/go-gitea/gitea/blob/6ff3a65708dd6a6472f7b164bb31a842a4c4d672/modules/structs/hook.go#L359-L387
 data HookPullRequestAcion
   = PrOpened
   | PrClosed
   | PrReOpened
-  | PrOther Text -- unhandled action
+  | PrUnknown Text -- unhandled action
   deriving stock (Eq, Generic, Show)
 
 instance FromJSON HookPullRequestAcion where
@@ -118,7 +119,7 @@ instance FromJSON HookPullRequestAcion where
         "opened" -> PrOpened
         "closed" -> PrClosed
         "reopened" -> PrReOpened
-        x -> PrOther x
+        x -> PrUnknown x
 
 instance ToJSON HookPullRequestAcion where
   toJSON = AE.String . fromTaggedHook
@@ -127,7 +128,7 @@ fromTaggedHook = \case
   PrOpened -> "opened"
   PrClosed -> "closed"
   PrReOpened -> "reopened"
-  PrOther t -> t
+  PrUnknown t -> t
 
 instance FromJSON PullRequestPayload where
   parseJSON = genericParseJSON prpOptions
