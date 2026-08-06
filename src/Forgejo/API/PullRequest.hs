@@ -14,7 +14,7 @@ import GHC.Generics (Generic)
 import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
 
 data PullRequestRoutes route = PullRequestRoutes
-  { requestedReviews
+  { requestReviewsApi
       :: route
         :- "repos"
           :> Capture "owner" Text
