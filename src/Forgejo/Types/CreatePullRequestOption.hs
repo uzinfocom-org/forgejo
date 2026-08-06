@@ -27,4 +27,4 @@ instance ToJSON CreatePullRequestOption where
     camelToSnake = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
 
 defaultCreatePullRequestOption :: Text -> Text -> Text -> CreatePullRequestOption
-defaultCreatePullRequestOption title hd base = CreatePullRequestOption title hd base Nothing Nothing Nothing Nothing Nothing Nothing
+defaultCreatePullRequestOption title hd base = CreatePullRequestOption title hd base Nothing [] Nothing Nothing [] Nothing
