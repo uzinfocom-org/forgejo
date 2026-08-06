@@ -55,6 +55,7 @@
       hp = pkgs.haskell.packages."ghc912".override {
         overrides = self: super: {
           brick = hlib.dontCheck (hlib.doJailbreak super.brick);
+          # bytestring = hlib.dontCheck (hlib.doJailbreak super.bytestring);
           # cabal-install = hlib.dontCheck (hlib.doJailbreak super.cabal-install);
         };
       };
@@ -69,7 +70,7 @@
             hp.hlint
             hp.ghcid
             hp.implicit-hie
-            # pkgs.haskellPackages.cabal-hoogle
+            # hp.cabal-hoogle
             pkgs.haskellPackages.cabal-fmt
             pkgs.pkg-config
             pkgs.zlib
