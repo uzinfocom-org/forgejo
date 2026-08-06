@@ -16,22 +16,34 @@ import GHC.Generics (Generic)
 -- | This type is used as argument for function 'createIssue'
 data CreateIssueOption = CreateIssueOption
   { cioOwner :: Text
+  -- ^ Owner ('User') of 'Issue'
   , cioRepo :: Text
+  -- ^ 'Repository' of 'Issue'
   , cioApiJson :: CreateIssueApiOption
+  -- ^ Body of API endpoint 'createIssueApi' of 'Issue'
   }
   deriving stock (Eq, Generic, Show)
 
 -- | This type is used as argument for body of endpoint 'createIssueApi'
 data CreateIssueApiOption = CreateIssueApiOption
   { ciaoTitle :: Text
+  -- ^ Title of 'Issue'
   , ciaoBody :: Maybe Text
+  -- ^ Body of 'Issue'
   , ciaoAssignee :: Maybe User
+  -- ^ Assignee of 'Issue'
   , ciaoAssigness :: [User]
+  -- ^ Assignees of 'Issue'
   , ciaoClosed :: Maybe Bool
+  -- ^ Information about close of 'Issue'
   , ciaoDueDate :: Maybe UTCTime
+  -- ^ Deadline of 'Issue'
   , ciaoLabels :: Maybe LabelId
+  -- ^ Labels ('Label') of 'Issue'
   , ciaoMilestone :: Maybe MilestoneId
+  -- ^ 'Milestone' of 'Issue'
   , ciaoRef :: Maybe Text
+  -- ^ Reference of 'Issue'
   }
   deriving stock (Eq, Generic, Show)
 
