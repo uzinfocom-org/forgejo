@@ -3,7 +3,7 @@
 
   inputs = {
     dream2nix.url = "github:lambdajon/dream2nix";
-    nixpkgs.follows = "dream2nix/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     git-hooks.url = "github:cachix/git-hooks.nix";
   };
@@ -50,13 +50,10 @@
 
     devShells = eachSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      # hp = pkgs.haskell.packages.ghc912;
       hlib = pkgs.haskell.lib;
       hp = pkgs.haskell.packages."ghc912".override {
         overrides = self: super: {
           brick = hlib.dontCheck (hlib.doJailbreak super.brick);
-          # bytestring = hlib.dontCheck (hlib.doJailbreak super.bytestring);
-          # cabal-install = hlib.dontCheck (hlib.doJailbreak super.cabal-install);
         };
       };
     in {
@@ -64,13 +61,13 @@
         nativeBuildInputs =
           [
             pkgs.cabal-install
+            hp.cabal-hoogle
             hp.ghc
             hp.haskell-language-server
             hp.fourmolu
             hp.hlint
             hp.ghcid
             hp.implicit-hie
-            # hp.cabal-hoogle
             pkgs.haskellPackages.cabal-fmt
             pkgs.pkg-config
             pkgs.zlib
