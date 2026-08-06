@@ -7,12 +7,14 @@ module Forgejo.API.PullRequest
 import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
+import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
+import Forgejo.Types.PullRequest (PullRequest)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
-import Servant (Capture, JSON, Post, ReqBody, type (:-), type (:>))
+import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
 
 data PullRequestRoutes route = PullRequestRoutes
-  { requestedReviews
+  { requestReviewsApi
       :: route
         :- "repos"
           :> Capture "owner" Text
@@ -21,7 +23,15 @@ data PullRequestRoutes route = PullRequestRoutes
           :> Capture "index" Int
           :> "requested_reviewers"
           :> ReqBody '[JSON] PullReviewRequestApiOptions
-          :> Post '[JSON] [PullReviewRequest]
+          :> PostCreated '[JSON] [PullReviewRequest]
+  , createPullRequestApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "pulls"
+          :> ReqBody '[JSON] CreatePullRequestOption
+          :> PostCreated '[JSON] PullRequest
   }
   deriving stock (Generic)
 

@@ -1,3 +1,6 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-missing-signatures #-}
+
 module Forgejo.Types.PullRequest
   ( PRBranch (..)
   , PullRequest (..)
@@ -5,11 +8,15 @@ module Forgejo.Types.PullRequest
   ) where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), Value, genericParseJSON, genericToJSON)
+import Data.Aeson qualified as AE
+import Data.Aeson.Encoding qualified as AE
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Forgejo.Types.Common (PullRequestId, RepoId)
+import Forgejo.Types.Label (Label)
 import Forgejo.Types.Repository (Repository)
+import Forgejo.Types.Team (Team)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
@@ -44,12 +51,12 @@ data PullRequest = PullRequest
   , prUser :: User
   , prTitle :: Text
   , prBody :: Text
-  , prLabels :: [Value]
+  , prLabels :: [Label]
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
-  , prAssignees :: Maybe [User]
-  , prRequestedReviewers :: [Value]
-  , prRequestedReviewersTeams :: [Value]
+  , prAssignees :: [User]
+  , prRequestedReviewers :: [User]
+  , prRequestedReviewersTeams :: [Team]
   , prState :: Text
   , prDraft :: Bool
   , prIsLocked :: Bool
@@ -86,7 +93,7 @@ instance ToJSON PullRequest where
   toJSON = genericToJSON prOptions
 
 data PullRequestPayload = PullRequestPayload
-  { prpAction :: Text
+  { prpAction :: HookPullRequestAcion
   , prpNumber :: Int
   , prpPullRequest :: PullRequest
   , prpRequestedReviewer :: Maybe User
@@ -96,6 +103,32 @@ data PullRequestPayload = PullRequestPayload
   , prpReview :: Maybe Value
   }
   deriving stock (Eq, Generic, Show)
+
+-- TODO: We need to implement all types of hooks inspired from - https://github.com/go-gitea/gitea/blob/6ff3a65708dd6a6472f7b164bb31a842a4c4d672/modules/structs/hook.go#L359-L387
+data HookPullRequestAcion
+  = PrOpened
+  | PrClosed
+  | PrReOpened
+  | PrUnknown Text -- unhandled action
+  deriving stock (Eq, Generic, Show)
+
+instance FromJSON HookPullRequestAcion where
+  parseJSON =
+    AE.withText "HookPullRequestAcion"
+      $ pure . \case
+        "opened" -> PrOpened
+        "closed" -> PrClosed
+        "reopened" -> PrReOpened
+        x -> PrUnknown x
+
+instance ToJSON HookPullRequestAcion where
+  toJSON = AE.String . fromTaggedHook
+  toEncoding = AE.text . fromTaggedHook
+fromTaggedHook = \case
+  PrOpened -> "opened"
+  PrClosed -> "closed"
+  PrReOpened -> "reopened"
+  PrUnknown t -> t
 
 instance FromJSON PullRequestPayload where
   parseJSON = genericParseJSON prpOptions
