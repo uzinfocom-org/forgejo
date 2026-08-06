@@ -19,7 +19,8 @@ arrOptions :: Options
 arrOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
 data Status = Offline | Idle | Active
-  deriving (Eq, FromJSON, Generic, Show, ToJSON)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (FromJSON, ToJSON)
 
 data ActionRunner = ActionRunner
   { arrDescription :: Text

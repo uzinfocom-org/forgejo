@@ -20,7 +20,7 @@ data PullReviewRequestOptions = PullReviewRequestOptions
   , reviewers :: [Text]
   , teamReviewers :: [Text]
   }
-  deriving (Eq, Generic, Show)
+  deriving stock (Eq, Generic, Show)
 
 createPullRequest :: Text -> Text -> CreatePullRequestOption -> AppM PullRequest
 createPullRequest owner repo opts = do

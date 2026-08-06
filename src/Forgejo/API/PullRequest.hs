@@ -33,7 +33,7 @@ data PullRequestRoutes route = PullRequestRoutes
           :> ReqBody '[JSON] CreatePullRequestOption
           :> PostCreated '[JSON] PullRequest
   }
-  deriving (Generic)
+  deriving stock (Generic)
 
 data PullReviewRequestApiOptions = PullReviewRequestApiOptions
   { reviewers :: [Text]

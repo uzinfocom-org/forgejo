@@ -23,7 +23,7 @@ data CommitStatusRoutes route = CommitStatusRoutes
           :> ReqBody '[JSON] CreateCommitStatus
           :> Post '[JSON] CommitStatus
   }
-  deriving (Generic)
+  deriving stock (Generic)
 
 data CommitStatusState = Pending | Success | Error | Failure | Warning
   deriving stock (Eq, Generic, Show)

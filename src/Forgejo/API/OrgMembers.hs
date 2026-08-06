@@ -10,4 +10,4 @@ import Servant (Capture, Get, JSON, type (:-), type (:>))
 data OrgMembersRoutes route = OrgMembersRoutes
   { getOrgMembersRoute :: route :- "orgs" :> Capture "org" Text :> "members" :> Get '[JSON] [User]
   }
-  deriving (Generic)
+  deriving stock (Generic)

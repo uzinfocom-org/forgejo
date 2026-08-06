@@ -2,7 +2,7 @@ module Forgejo.Types.IssueComment
   ( IssueCommentPayload (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
+import Data.Aeson (FromJSON (..), genericParseJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Forgejo.Types.Comment (Comment)
@@ -28,6 +28,3 @@ data IssueCommentPayload = IssueCommentPayload
 
 instance FromJSON IssueCommentPayload where
   parseJSON = genericParseJSON icOptions
-
-instance ToJSON IssueCommentPayload where
-  toJSON = genericToJSON icOptions
