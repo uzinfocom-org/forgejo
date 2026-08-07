@@ -4,7 +4,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     dream2nix.modules.dream2nix.WIP-haskell-cabal
   ];
@@ -12,10 +13,9 @@
   name = "forgejo";
   version = "0.1.0.0";
 
-  deps = {nixpkgs, ...}: {
+  deps = { nixpkgs, ... }: {
     haskell-compiler = nixpkgs.haskell.compiler.ghc912;
-    inherit
-      (nixpkgs)
+    inherit (nixpkgs)
       bzip2
       gnupg
       libpq
@@ -28,9 +28,11 @@
 
   mkDerivation.src = lib.cleanSourceWith {
     src = lib.cleanSource ./.;
-    filter = name: type: let
-      baseName = baseNameOf (toString name);
-    in
+    filter =
+      name: type:
+      let
+        baseName = baseNameOf (toString name);
+      in
       !(lib.hasSuffix ".nix" baseName);
   };
 
