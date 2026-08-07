@@ -5,6 +5,7 @@ module Forgejo.Types.PullRequest
   ( PRBranch (..)
   , PullRequest (..)
   , PullRequestPayload (..)
+  , HookPullRequestAction (..)
   ) where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), Value, genericParseJSON, genericToJSON)
