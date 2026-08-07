@@ -1,4 +1,4 @@
-module Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption (..), defaultCreatePullRequestOption) where
+module Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption (..), withDefaultCreatePullRequestOption) where
 
 import Data.Aeson (ToJSON (..), genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
