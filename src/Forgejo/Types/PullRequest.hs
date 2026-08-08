@@ -110,6 +110,7 @@ data HookPullRequestAction
   = PrOpened
   | PrClosed
   | PrReOpened
+  | PrLabelUpdated
   | PrUnknown Text -- unhandled action
   deriving stock (Eq, Generic, Show)
 
@@ -120,6 +121,7 @@ instance FromJSON HookPullRequestAction where
         "opened" -> PrOpened
         "closed" -> PrClosed
         "reopened" -> PrReOpened
+        "label_updated" -> PrLabelUpdated
         x -> PrUnknown x
 
 instance ToJSON HookPullRequestAction where
