@@ -32,6 +32,7 @@ module Forgejo
   , module Forgejo.Types.ActionRun
   , module Forgejo.Types.Push
   , module Forgejo.Types.IssueComment
+  , module Forgejo.Types.CreateIssueOption
   ) where
 
 import Forgejo.Methods.CommitStatus (createCommitStatus)
@@ -40,6 +41,7 @@ import Forgejo.Methods.PullRequest (addReviewer)
 import Forgejo.Types.ActionRun
 import Forgejo.Types.Comment
 import Forgejo.Types.Commit
+import Forgejo.Types.CreateIssueOption (CreateIssueApiOption (..), CreateIssueOption (..))
 import Forgejo.Types.Event (ForgejoEvent (..))
 import Forgejo.Types.EventType (ForgejoEventType)
 import Forgejo.Types.Issue
