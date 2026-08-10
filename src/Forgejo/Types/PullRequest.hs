@@ -55,7 +55,7 @@ data PullRequest = PullRequest
   , prLabels :: [Label]
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
-  , prAssignees :: Maybe [User]
+  , prAssignees :: Maybe [User] -- Forgejo return instead of empty list. That's why we use Maybe
   , prRequestedReviewers :: [User]
   , prRequestedReviewersTeams :: [Team]
   , prState :: Text
