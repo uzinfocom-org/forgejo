@@ -3,6 +3,7 @@ module Forgejo
     getOrgMember
   , addReviewer
   , createCommitStatus
+  , createIssue
 
     -- * Webhook
   , module Forgejo.Webhook
@@ -36,6 +37,7 @@ module Forgejo
   ) where
 
 import Forgejo.Methods.CommitStatus (createCommitStatus)
+import Forgejo.Methods.Issue (createIssue)
 import Forgejo.Methods.OrgMembers (getOrgMember)
 import Forgejo.Methods.PullRequest (addReviewer)
 import Forgejo.Types.ActionRun
