@@ -55,7 +55,7 @@ data PullRequest = PullRequest
   , prLabels :: [Label]
   , prMilestone :: Maybe Value
   , prAssignee :: Maybe User
-  , prAssignees :: [User]
+  , prAssignees :: Maybe [User] -- Forgejo return instead of empty list. That's why we use Maybe
   , prRequestedReviewers :: [User]
   , prRequestedReviewersTeams :: [Team]
   , prState :: Text
@@ -110,6 +110,7 @@ data HookPullRequestAction
   = PrOpened
   | PrClosed
   | PrReOpened
+  | PrLabelUpdated
   | PrUnknown Text -- unhandled action
   deriving stock (Eq, Generic, Show)
 
@@ -120,6 +121,7 @@ instance FromJSON HookPullRequestAction where
         "opened" -> PrOpened
         "closed" -> PrClosed
         "reopened" -> PrReOpened
+        "label_updated" -> PrLabelUpdated
         x -> PrUnknown x
 
 instance ToJSON HookPullRequestAction where
