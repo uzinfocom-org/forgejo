@@ -3,27 +3,16 @@
 
   inputs = {
     dream2nix.url = "github:lambdajon/dream2nix";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
 
     git-hooks.url = "github:cachix/git-hooks.nix";
   };
 
-  outputs =
-    {
-      self,
-      dream2nix,
-      nixpkgs,
-      git-hooks,
-    }:
+  outputs = { self, dream2nix, nixpkgs, git-hooks, }:
     let
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-      ];
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
       eachSystem = nixpkgs.lib.genAttrs systems;
-    in
-    {
+    in {
       packages = eachSystem (system: {
         default = dream2nix.lib.evalModules {
           packageSets.nixpkgs = nixpkgs.legacyPackages.${system};
@@ -38,12 +27,9 @@
         };
       });
 
-      checks = eachSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
+      checks = eachSystem (system:
+        let pkgs = nixpkgs.legacyPackages.${system};
+        in {
           pre-commit = git-hooks.lib.${system}.run {
             src = ./.;
 
@@ -54,11 +40,9 @@
               };
             };
           };
-        }
-      );
+        });
 
-      devShells = eachSystem (
-        system:
+      devShells = eachSystem (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
           hlib = pkgs.haskell.lib;
@@ -67,12 +51,10 @@
               brick = hlib.dontCheck (hlib.doJailbreak super.brick);
             };
           };
-        in
-        {
+        in {
           default = pkgs.mkShell {
             nativeBuildInputs = [
               pkgs.cabal-install
-              hp.cabal-hoogle
               hp.ghc
               hp.haskell-language-server
               hp.fourmolu
@@ -97,8 +79,7 @@
 
               pkgs.jq
               pkgs.just
-            ]
-            ++ self.checks.${system}.pre-commit.enabledPackages;
+            ] ++ self.checks.${system}.pre-commit.enabledPackages;
 
             shellHook = ''
               echo "Welcome to Forgejo dev shell"
@@ -114,15 +95,12 @@
 
             NIX_CONFIG = "extra-experimental-features = nix-command flakes";
           };
-        }
-      );
-      apps = eachSystem (
-        system:
+        });
+      apps = eachSystem (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
           refresh = self.packages.${system}.default.config.lock.refresh;
-        in
-        {
+        in {
           update-lock = {
             type = "app";
             program = "${pkgs.writeShellScript "update-lock" ''
@@ -130,7 +108,6 @@
               exec ${nixpkgs.lib.getExe refresh}
             ''}";
           };
-        }
-      );
+        });
     };
 }
