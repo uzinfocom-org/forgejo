@@ -26,6 +26,7 @@ library
     Forgejo.API.PullRequest
     Forgejo.API.Repository
     Forgejo.App
+    Forgejo.Error
     Forgejo.Methods.CommitStatus
     Forgejo.Methods.Issue
     Forgejo.Methods.Organization
@@ -285,9 +286,11 @@ library
     , optparse-generic
     , path-pieces
     , safe-exceptions
+    , servant
     , servant-client
     , servant-client-core
     , servant-server
+    , sop-core
     , stm
     , text
     , time

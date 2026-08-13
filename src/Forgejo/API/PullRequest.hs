@@ -7,11 +7,16 @@ module Forgejo.API.PullRequest
 import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
+import Forgejo.Types.APIError (APIError)
+import Forgejo.Types.APIForbiddenError (APIForbiddenError)
+import Forgejo.Types.APINotFound (APINotFound)
+import Forgejo.Types.APIValidationError (APIValidationError)
 import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
 import Forgejo.Types.PullRequest (PullRequest)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
-import Servant (Capture, JSON, PostCreated, ReqBody, type (:-), type (:>))
+import Network.HTTP.Types (StdMethod (..))
+import Servant (Capture, JSON, ReqBody, UVerb, WithStatus, type (:-), type (:>))
 
 data PullRequestRoutes route = PullRequestRoutes
   { requestReviewsApi
@@ -23,7 +28,12 @@ data PullRequestRoutes route = PullRequestRoutes
           :> Capture "index" Int
           :> "requested_reviewers"
           :> ReqBody '[JSON] PullReviewRequestApiOptions
-          :> PostCreated '[JSON] [PullReviewRequest]
+          :> UVerb
+               'POST
+               '[JSON]
+               '[ WithStatus 201 [PullReviewRequest]
+                , WithStatus 422 APIValidationError
+                ]
   , createPullRequestApi
       :: route
         :- "repos"
@@ -31,7 +41,15 @@ data PullRequestRoutes route = PullRequestRoutes
           :> Capture "repo" Text
           :> "pulls"
           :> ReqBody '[JSON] CreatePullRequestOption
-          :> PostCreated '[JSON] PullRequest
+          :> UVerb
+               'POST
+               '[JSON]
+               '[ WithStatus 201 PullRequest
+                , WithStatus 403 APIForbiddenError
+                , WithStatus 404 APINotFound
+                , WithStatus 409 APIError
+                , WithStatus 422 APIValidationError
+                ]
   }
   deriving stock (Generic)
 

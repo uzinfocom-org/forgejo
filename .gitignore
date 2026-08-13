@@ -28,3 +28,4 @@ cabal.project.local~
 config.toml
 tmp/
 .pre-commit-config.yaml
+.direnv
