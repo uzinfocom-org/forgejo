@@ -1,10 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Forgejo.Types.Issue
   ( Issue (..)
   , IssuePRRef (..)
   , IssueRepository (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
+import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON, withObject, (.!=), (.:), (.:?))
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -110,4 +112,30 @@ data Issue = Issue
   deriving stock (Eq, Generic, Show)
 
 instance FromJSON Issue where
-  parseJSON = genericParseJSON issueOptions
+  parseJSON = withObject "Issue" $ \o ->
+    Issue
+      <$> o .: "id"
+      <*> o .: "url"
+      <*> o .: "html_url"
+      <*> o .: "number"
+      <*> o .: "user"
+      <*> o .: "original_author"
+      <*> o .: "original_author_id"
+      <*> o .: "title"
+      <*> o .: "body"
+      <*> o .: "ref"
+      <*> (o .:? "assets" .!= [])
+      <*> (o .:? "labels" .!= [])
+      <*> o .:? "milestone"
+      <*> o .:? "assignee"
+      <*> (o .:? "assignees" .!= [])
+      <*> o .: "state"
+      <*> o .: "is_locked"
+      <*> o .: "comments"
+      <*> o .: "created_at"
+      <*> o .: "updated_at"
+      <*> o .:? "closed_at"
+      <*> o .:? "due_date"
+      <*> o .:? "pull_request"
+      <*> o .: "repository"
+      <*> o .: "pin_order"
