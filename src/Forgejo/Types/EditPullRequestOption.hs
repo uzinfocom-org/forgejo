@@ -7,7 +7,7 @@ module Forgejo.Types.EditPullRequestOption
   , EditPullRequestOptionPayload (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.!=), (.:), (.:?))
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -40,11 +40,11 @@ instance FromJSON EditPullRequestOption where
     EditPullRequestOption
       <$> o .: "allow_maintainer_edit"
       <*> o .: "assignee"
-      <*> o .: "assignees"
+      <*> (o .:? "assignees" .!= [])
       <*> o .: "base"
       <*> o .: "body"
       <*> o .: "due_date"
-      <*> o .: "labels"
+      <*> (o .:? "labels" .!= [])
       <*> o .: "milestone"
       <*> o .: "state"
       <*> o .: "title"
