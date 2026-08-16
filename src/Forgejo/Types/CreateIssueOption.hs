@@ -30,9 +30,7 @@ data CreateIssueApiOption = CreateIssueApiOption
   -- ^ Title of 'Issue'
   , ciaoBody :: Maybe Text
   -- ^ Body of 'Issue'
-  , ciaoAssignee :: Maybe User
-  -- ^ Assignee of 'Issue'
-  , ciaoAssigness :: [User]
+  , ciaoAssignees :: [User]
   -- ^ Assignees of 'Issue'
   , ciaoClosed :: Maybe Bool
   -- ^ Information about close of 'Issue'

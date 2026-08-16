@@ -9,8 +9,10 @@ import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
 import Data.Aeson.Types (Options (..), SumEncoding (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Forgejo.Types.APIError (APIError)
 import GHC.Generics (Generic)
-import Servant (Capture, JSON, Post, ReqBody, type (:-), type (:>))
+import Network.HTTP.Types (StdMethod (..))
+import Servant (Capture, JSON, ReqBody, UVerb, WithStatus, type (:-), type (:>))
 
 data CommitStatusRoutes route = CommitStatusRoutes
   { createCommitStatusRoute
@@ -21,7 +23,12 @@ data CommitStatusRoutes route = CommitStatusRoutes
           :> "statuses"
           :> Capture "sha" Text
           :> ReqBody '[JSON] CreateCommitStatus
-          :> Post '[JSON] CommitStatus
+          :> UVerb
+               'POST
+               '[JSON]
+               '[ WithStatus 201 CommitStatus
+                , WithStatus 400 APIError
+                ]
   }
   deriving stock (Generic)
 

@@ -1,9 +1,21 @@
 module Forgejo
-  ( -- * Methods
-    getOrgMember
+  ( -- * Runner
+    AppEnv
+  , mkAppEnv
+  , runAppM
+  , runForgejo
+
+    -- * Errors
+  , ForgejoError (..)
+
+    -- * Methods
+  , getOrgMember
   , addReviewer
   , createCommitStatus
   , createIssue
+  , createPullRequest
+  , createRepository
+  , createOrgRepository
 
     -- * Webhook
   , module Forgejo.Webhook
@@ -36,10 +48,14 @@ module Forgejo
   , module Forgejo.Types.CreateIssueOption
   ) where
 
+import Forgejo.App (AppEnv, mkAppEnv, runAppM, runForgejo)
+import Forgejo.Error (ForgejoError (..))
 import Forgejo.Methods.CommitStatus (createCommitStatus)
 import Forgejo.Methods.Issue (createIssue)
 import Forgejo.Methods.OrgMembers (getOrgMember)
-import Forgejo.Methods.PullRequest (addReviewer)
+import Forgejo.Methods.Organization (createOrgRepository)
+import Forgejo.Methods.PullRequest (addReviewer, createPullRequest)
+import Forgejo.Methods.Repository (createRepository)
 import Forgejo.Types.ActionRun
 import Forgejo.Types.Comment
 import Forgejo.Types.Commit

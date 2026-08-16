@@ -7,7 +7,7 @@ module Forgejo.Types.EditIssueOption
   , EditIssueOptionPayload (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.!=), (.:), (.:?))
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -38,7 +38,7 @@ instance FromJSON EditIssueOption where
   parseJSON = withObject "EditIssueOption" $ \o ->
     EditIssueOption
       <$> o .: "assignee"
-      <*> o .: "assignees"
+      <*> (o .:? "assignees" .!= [])
       <*> o .: "body"
       <*> o .: "due_date"
       <*> o .: "milestone"
