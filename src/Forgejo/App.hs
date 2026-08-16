@@ -1,3 +1,6 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module Forgejo.App
   ( AppEnv
   , AppM
@@ -16,8 +19,9 @@ import Data.Text.Encoding (decodeUtf8Lenient, encodeUtf8)
 import Forgejo.API (ForgejoAPI, ForgejoRoutes)
 import Forgejo.API qualified as FA
 import Forgejo.Error (ForgejoError (..))
-import Network.HTTP.Types (statusCode)
+import Network.HTTP.Types.Status
 import Servant (Handler, ServerError (..), err400, err401, err403, err404, err409, err422, err500, err503)
+import Servant.API.Status
 import Servant.Client (AsClientT, ClientEnv, ClientError (..), ClientM, runClientM)
 import Servant.Client.Core (responseBody, responseStatusCode)
 import Servant.Client.Generic (genericClientHoist)
@@ -72,10 +76,22 @@ toServantError = \case
   ErrConflict msg _ -> err409{errBody = body msg}
   ErrValidation msg _ -> err422{errBody = body msg}
   ErrInvalidTopics _ u -> err422{errBody = body u}
-  ErrRepoArchived msg _ -> ServerError 423 "Locked" (body msg) []
+  ErrRepoArchived msg _ -> err423{errBody = body msg}
   ErrServer msg _ -> err500{errBody = body msg}
   ErrDecodeFailure msg -> err500{errBody = body msg}
   ErrNetwork msg -> err503{errBody = body msg}
   ErrUnexpected code msg -> ServerError code "Unexpected Error" (body msg) []
  where
   body = BSL.fromStrict . encodeUtf8
+
+err423 :: ServerError
+err423 =
+  ServerError
+    { errHTTPCode = 423
+    , errReasonPhrase = "Arhived"
+    , errBody = mempty
+    , errHeaders = []
+    }
+
+instance KnownStatus 423 where
+  statusVal _ = mkStatus 423 "Archived"
