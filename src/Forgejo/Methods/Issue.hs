@@ -30,9 +30,14 @@ createIssue CreateIssueOption{..} = do
   fg <- forgejo
   createIssueApi (issues fg) cioOwner cioRepo cioApiJson >>= liftResult
 
-{- | This function creates a comment on an issue/PR on Forgejo via calling to
-endpoint 'createIssueCommentApi' from 'IssueRoutes'. Takes one argument of
-type 'CreateIssueCommentOption'.
+{- | Create a comment for issues
+
+  Possible errors:
+
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrRepoArchived': repository is archived
+  * 'ErrServer': internal server error occured
 -}
 createIssueComment :: CreateIssueCommentOption -> AppM Comment
 createIssueComment CreateIssueCommentOption{..} = do

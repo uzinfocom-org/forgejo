@@ -5,7 +5,9 @@ module Forgejo.API.Issue
 import Data.Text (Text)
 import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
+import Forgejo.Types.APIInternalServerError (APIInternalServerError)
 import Forgejo.Types.APINotFound (APINotFound)
+import Forgejo.Types.APIRepoArchivedError (APIRepoArchivedError)
 import Forgejo.Types.APIValidationError (APIValidationError)
 import Forgejo.Types.Comment (Comment (..))
 import Forgejo.Types.CreateIssueCommentOption
@@ -48,8 +50,8 @@ data IssueRoutes route = IssueRoutes
                '[ WithStatus 201 Comment
                 , WithStatus 403 APIForbiddenError
                 , WithStatus 404 APINotFound
-                , WithStatus 409 APIError
-                , WithStatus 422 APIValidationError
+                , WithStatus 423 APIRepoArchivedError
+                , WithStatus 500 APIInternalServerError
                 ]
   -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
   }
