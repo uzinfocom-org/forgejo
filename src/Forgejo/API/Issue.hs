@@ -33,6 +33,7 @@ data IssueRoutes route = IssueRoutes
                 , WithStatus 404 APINotFound
                 , WithStatus 409 APIError
                 , WithStatus 422 APIValidationError
+                , WithStatus 423 APIRepoArchivedError
                 ]
   -- ^ POST /repos/{owner}/{repo}/issues
   , createIssueCommentApi
