@@ -75,6 +75,3 @@ liftResult (S es) = throwError (collapseErrors es)
 collapseErrors :: (All AsForgejoError xs) => NS I xs -> ForgejoError
 collapseErrors (Z (I e)) = asForgejoError e
 collapseErrors (S xs) = collapseErrors xs
-
-instance KnownStatus 423 where
-  statusVal _ = status400
