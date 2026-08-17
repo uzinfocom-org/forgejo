@@ -1,53 +1,31 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
-
 module Forgejo.Types.CreateIssueCommentOption
   ( CreateIssueCommentOption (..)
-  , CreateIssueCommentOptionPayload (..)
+  , CreateIssueCommentApiOption (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (ToJSON (..), genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
-import Data.Time (UTCTime)
 import GHC.Generics (Generic)
 
-arpOptions :: Options
-arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+cicoOptions :: Options
+cicoOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
 
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+-- | The actual JSON body sent to Forgejo.
+newtype CreateIssueCommentApiOption = CreateIssueCommentApiOption
+  { cicoBody :: Text
+  }
+  deriving stock (Eq, Generic, Show)
 
+instance ToJSON CreateIssueCommentApiOption where
+  toJSON = genericToJSON cicoOptions
+
+{- | Wrapper carrying routing info alongside the request body,
+mirroring CreateIssueOption's shape.
+-}
 data CreateIssueCommentOption = CreateIssueCommentOption
-  { body :: Text
-  , updatedAt :: UTCTime
+  { ciscoOwner :: Text
+  , ciscoRepo :: Text
+  , ciscoIndex :: Int
+  , ciscoApiJson :: CreateIssueCommentApiOption
   }
-  deriving stock (Eq, Generic, Show)
-
--- Manual instance because Forgejo uses "ScheduleID" (capitalised) as the JSON key.
-instance FromJSON CreateIssueCommentOption where
-  parseJSON = withObject "CreateIssueCommentOption" $ \o ->
-    CreateIssueCommentOption
-      <$> o .: "body"
-      <*> o .: "updated_at"
-
-instance ToJSON CreateIssueCommentOption where
-  toJSON = genericToJSON runOptions
-
-data CreateIssueCommentOptionPayload = CreateIssueCommentOptionPayload
-  { arpAction :: Text
-  , arpRun :: CreateIssueCommentOption
-  , arpPriorStatus :: Text
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance FromJSON CreateIssueCommentOptionPayload where
-  parseJSON = withObject "CreateIssueCommentOptionPayload" $ \o ->
-    CreateIssueCommentOptionPayload
-      <$> o .: "action"
-      <*> o .: "run"
-      <*> o .: "prior_status"
-
-instance ToJSON CreateIssueCommentOptionPayload where
-  toJSON = genericToJSON arpOptions

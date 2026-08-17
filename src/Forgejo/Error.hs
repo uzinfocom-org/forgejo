@@ -16,7 +16,9 @@ import Forgejo.Types.APIRepoArchivedError (APIRepoArchivedError (..))
 import Forgejo.Types.APIUnauthorizedError (APIUnauthorizedError (..))
 import Forgejo.Types.APIValidationError (APIValidationError (..))
 import GHC.Generics (Generic)
+import Network.HTTP.Types (status400)
 import Servant (Union, WithStatus (..))
+import Servant.API.Status (KnownStatus (statusVal))
 
 data ForgejoError
   = ErrBadRequest Text Text
