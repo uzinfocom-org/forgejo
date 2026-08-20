@@ -1,21 +1,38 @@
 {
   description = "Forgejo bot client";
-
   inputs = {
     dream2nix.url = "github:lambdajon/dream2nix";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default";
     git-hooks.url = "github:cachix/git-hooks.nix";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-
-  outputs = { self, dream2nix, nixpkgs, git-hooks, }:
+  outputs = { self, dream2nix, nixpkgs, nixpkgs-unstable, systems, git-hooks, treefmt-nix, }:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
-      eachSystem = nixpkgs.lib.genAttrs systems;
+      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
+      # pkgsUnstable pulled in solely for a newer fourmolu with GHC2024 support;
+      # everything else still comes from the pinned nixpkgs.
+      pkgsUnstable = eachSystem (pkgs: nixpkgs-unstable.legacyPackages.${pkgs.system});
+      treefmt = {
+        projectRootFile = "flake.nix";
+        programs.fourmolu.enable = true;
+        programs.cabal-fmt.enable = true;
+        programs.nixfmt.enable = true;
+      };
+      treefmtEval = eachSystem (pkgs:
+        treefmt-nix.lib.evalModule pkgs (treefmt // {
+          programs.fourmolu.package = pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu;
+        }));
     in {
-      packages = eachSystem (system: {
+      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
+
+      packages = eachSystem (pkgs: {
         default = dream2nix.lib.evalModules {
-          packageSets.nixpkgs = nixpkgs.legacyPackages.${system};
+          packageSets.nixpkgs = pkgs;
           modules = [
             ./default.nix
             {
@@ -26,25 +43,19 @@
           ];
         };
       });
-
-      checks = eachSystem (system:
-        let pkgs = nixpkgs.legacyPackages.${system};
-        in {
-          pre-commit = git-hooks.lib.${system}.run {
-            src = ./.;
-
-            hooks = {
-              treefmt = {
-                enable = true;
-                package = pkgs.treefmt;
-              };
+      checks = eachSystem (pkgs: {
+        pre-commit = git-hooks.lib.${pkgs.system}.run {
+          src = ./.;
+          hooks = {
+            treefmt = {
+              enable = true;
+              package = treefmtEval.${pkgs.system}.config.build.wrapper;
             };
           };
-        });
-
-      devShells = eachSystem (system:
+        };
+      });
+      devShells = eachSystem (pkgs:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
           hlib = pkgs.haskell.lib;
           hp = pkgs.haskell.packages."ghc912".override {
             overrides = self: super: {
@@ -57,7 +68,7 @@
               pkgs.cabal-install
               hp.ghc
               hp.haskell-language-server
-              hp.fourmolu
+              pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu
               hp.hlint
               hp.ghcid
               hp.implicit-hie
@@ -70,36 +81,29 @@
               pkgs.libzip
               pkgs.libpq
               pkgs.libpq.dev
-
               pkgs.nixd
               pkgs.statix
               pkgs.deadnix
-              pkgs.treefmt
+              treefmtEval.${pkgs.system}.config.build.wrapper
               pkgs.nixfmt
-
               pkgs.jq
               pkgs.just
-            ] ++ self.checks.${system}.pre-commit.enabledPackages;
-
+            ] ++ self.checks.${pkgs.system}.pre-commit.enabledPackages;
             shellHook = ''
               echo "Welcome to Forgejo dev shell"
-
-              ${self.checks.${system}.pre-commit.shellHook}
-
+              ${self.checks.${pkgs.system}.pre-commit.shellHook}
               export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.postgresql}/lib
               export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.libzip}/lib
               export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${pkgs.bzip2}/lib
               export LIBRARY_PATH=$LIBRARY_PATH:${pkgs.bzip2}/lib
               export NIX_LDFLAGS="$NIX_LDFLAGS -L${pkgs.bzip2}/lib"
             '';
-
             NIX_CONFIG = "extra-experimental-features = nix-command flakes";
           };
         });
-      apps = eachSystem (system:
+      apps = eachSystem (pkgs:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
-          refresh = self.packages.${system}.default.config.lock.refresh;
+          refresh = self.packages.${pkgs.system}.default.config.lock.refresh;
         in {
           update-lock = {
             type = "app";
