@@ -2,6 +2,8 @@ module Forgejo.API.Organization
   ( OrgRoutes (..)
   ) where
 
+import Data.Aeson (ToJSON (..), genericToJSON)
+import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
@@ -28,5 +30,27 @@ data OrgRoutes route = OrgRoutes
                 , WithStatus 409 APIError
                 ]
   -- ^ POST /org/{org}/repos
+  , getOrgReposApi
+      :: route
+        :- "org"
+          :> Capture "org" Text
+          :> "repos"
+          :> ReqBody '[JSON] GetOrgRepositoryOption
+          :> UVerb
+               'POST
+               '[JSON]
+               '[ WithStatus 200 [Repository]
+                , WithStatus 404 APINotFound
+                ]
+  -- ^ GET /org/{org}/repos
   }
   deriving stock (Generic)
+
+data GetOrgRepositoryOption = GetOrgRepositoryOption
+  { goroPage :: Maybe Int
+  , goroLimit :: Maybe Int
+  }
+  deriving stock (Eq, Generic, Show)
+
+instance ToJSON GetOrgRepositoryOption where
+  toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
