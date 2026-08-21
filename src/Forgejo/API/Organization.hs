@@ -1,5 +1,7 @@
 module Forgejo.API.Organization
   ( OrgRoutes (..)
+  , GetOrgRepositoryApiOption
+  , GetOrgRepositoryOption (..)
   ) where
 
 import Data.Aeson (ToJSON (..), genericToJSON)
@@ -35,7 +37,7 @@ data OrgRoutes route = OrgRoutes
         :- "org"
           :> Capture "org" Text
           :> "repos"
-          :> ReqBody '[JSON] GetOrgRepositoryOption
+          :> ReqBody '[JSON] (Maybe GetOrgRepositoryApiOption)
           :> UVerb
                'POST
                '[JSON]
@@ -46,11 +48,16 @@ data OrgRoutes route = OrgRoutes
   }
   deriving stock (Generic)
 
-data GetOrgRepositoryOption = GetOrgRepositoryOption
+data GetOrgRepositoryApiOption = GetOrgRepositoryApiOption
   { goroPage :: Maybe Int
   , goroLimit :: Maybe Int
   }
   deriving stock (Eq, Generic, Show)
 
-instance ToJSON GetOrgRepositoryOption where
+instance ToJSON GetOrgRepositoryApiOption where
   toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
+
+data GetOrgRepositoryOption = GetOrgRepositoryOption
+  { goroOrg :: Text
+  , goroApiJson :: Maybe GetOrgRepositoryApiOption
+  }

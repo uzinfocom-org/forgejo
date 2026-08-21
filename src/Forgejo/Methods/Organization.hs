@@ -1,9 +1,10 @@
 module Forgejo.Methods.Organization
   ( createOrgRepository
+  , getOrgRepos
   ) where
 
-import Forgejo.API (ForgejoRoutes (orgs))
-import Forgejo.API.Organization (OrgRoutes (..))
+import Forgejo.API
+import Forgejo.API.Organization (OrgRoutes (..), GetOrgRepositoryOption (..))
 import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
 import Forgejo.Types.CreateRepositoryOption (CreateOrgRepositoryOption (..))
@@ -21,3 +22,8 @@ createOrgRepository :: CreateOrgRepositoryOption -> AppM Repository
 createOrgRepository CreateOrgRepositoryOption{..} = do
   fg <- forgejo
   createOrgRepositoryApi (orgs fg) coroOwner coroApiJson >>= liftResult
+
+getOrgRepos :: GetOrgRepositoryOption -> AppM [Repository]
+getOrgRepos GetOrgRepositoryOption{..} = do
+  fg <- forgejo
+  getOrgReposApi (orgs fg) goroOrg goroApiJson >>= liftResult
