@@ -79,6 +79,10 @@
 
               pkgs.jq
               pkgs.just
+
+              pkgs.sops
+              pkgs.age
+              pkgs.yq-go
             ] ++ self.checks.${system}.pre-commit.enabledPackages;
 
             shellHook = ''

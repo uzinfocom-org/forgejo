@@ -318,6 +318,11 @@ test-suite forgejo-test
   type:               exitcode-stdio-1.0
   main-is:            Main.hs
   other-modules:
+    Forgejo.Integration.Helpers
+    Forgejo.Integration.Issue
+    Forgejo.Integration.Organization
+    Forgejo.Integration.Repository
+    Forgejo.IntegrationSpec
     Forgejo.Types.EventSpec
     Forgejo.WebhookSpec
 
