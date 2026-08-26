@@ -6,7 +6,7 @@ module Forgejo.Types.Attachment
   ( Attachment (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON)
+import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -33,3 +33,6 @@ data Attachment = Attachment
 
 instance FromJSON Attachment where
   parseJSON = genericParseJSON aOptions
+
+instance ToJSON Attachment where
+  toJSON = genericToJSON aOptions

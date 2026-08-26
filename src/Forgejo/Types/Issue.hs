@@ -139,3 +139,6 @@ instance FromJSON Issue where
       <*> o .:? "pull_request"
       <*> o .: "repository"
       <*> o .: "pin_order"
+
+instance ToJSON Issue where
+  toJSON = genericToJSON issueOptions
