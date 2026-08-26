@@ -2,6 +2,7 @@
 
 module Forgejo.Types.IssueComment
   ( IssueCommentPayload (..)
+  , HookIssueCommentAction (..)
   ) where
 
 import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON)
@@ -20,7 +21,7 @@ icOptions :: Options
 icOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 2}
 
 data IssueCommentPayload = IssueCommentPayload
-  { icAction :: Text
+  { icAction :: HookIssueCommentAction
   , icIssue :: Issue
   , icPullRequest :: Maybe PullRequest
   , icComment :: Comment
