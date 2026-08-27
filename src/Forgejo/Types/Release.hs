@@ -4,10 +4,9 @@
 
 module Forgejo.Types.Release
   ( Release (..)
-  , ReleasePayload (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:), genericParseJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -16,67 +15,33 @@ import Forgejo.Types.TagArchiveDownloadCount (TagArchiveDownloadCount)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
-arpOptions :: Options
-arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
-
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+rOptions :: Options
+rOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 1}
 
 data Release = Release
-  { archiveDownloadCount :: TagArchiveDownloadCount
-  , assets :: [Attachment]
-  , author :: User
-  , body :: Text
-  , createdAt :: UTCTime
-  , draft :: Bool
-  , hideArchiveLinks :: Bool
-  , htmlUrl :: Text
-  , id :: Int
-  , name :: Text
-  , prerelease :: Bool
-  , publishedAt :: UTCTime
-  , tagName :: Text
-  , tarballUrl :: Text
-  , targetCommitish :: Text
-  , uploadUrl :: Text
-  , url :: Text
-  , zipballUrl :: Text
+  { rArchiveDownloadCount :: TagArchiveDownloadCount
+  , rAssets :: [Attachment]
+  , rAuthor :: User
+  , rBody :: Text
+  , rCreatedAt :: UTCTime
+  , rDraft :: Bool
+  , rHideArchiveLinks :: Bool
+  , rHtmlUrl :: Text
+  , rId :: Int
+  , rName :: Text
+  , rPrerelease :: Bool
+  , rPublishedAt :: UTCTime
+  , rTagName :: Text
+  , rTarballUrl :: Text
+  , rTargetCommitish :: Text
+  , rUploadUrl :: Text
+  , rUrl :: Text
+  , rZipballUrl :: Text
   }
   deriving stock (Eq, Generic, Show)
 
--- Manual instance because Forgejo uses "ScheduleID" (capitalised) as the JSON key.
 instance FromJSON Release where
-  parseJSON = withObject "Release" $ \o ->
-    Release
-      <$> o .: "archive_download_count"
-      <*> o .: "assets"
-      <*> o .: "author"
-      <*> o .: "body"
-      <*> o .: "created_at"
-      <*> o .: "draft"
-      <*> o .: "hide_archive_links"
-      <*> o .: "html_url"
-      <*> o .: "id"
-      <*> o .: "name"
-      <*> o .: "prerelease"
-      <*> o .: "published_at"
-      <*> o .: "tag_name"
-      <*> o .: "tarball_url"
-      <*> o .: "target_commitish"
-      <*> o .: "upload_url"
-      <*> o .: "url"
-      <*> o .: "zipball_url"
+  parseJSON = genericParseJSON rOptions
 
-data ReleasePayload = ReleasePayload
-  { arpAction :: Text
-  , arpRun :: Release
-  , arpPriorStatus :: Text
-  }
-  deriving stock (Eq, Generic, Show)
-
-instance FromJSON ReleasePayload where
-  parseJSON = withObject "ReleasePayload" $ \o ->
-    ReleasePayload
-      <$> o .: "action"
-      <*> o .: "run"
-      <*> o .: "prior_status"
+instance ToJSON Release where
+  toJSON = genericToJSON rOptions

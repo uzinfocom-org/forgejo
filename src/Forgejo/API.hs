@@ -10,6 +10,7 @@ import Forgejo.API.Issue (IssueRoutes)
 import Forgejo.API.OrgMembers (OrgMembersRoutes)
 import Forgejo.API.Organization (OrgRoutes)
 import Forgejo.API.PullRequest (PullRequestRoutes)
+import Forgejo.API.Release (ReleaseRoutes)
 import Forgejo.API.Repository (RepoRoutes)
 import GHC.Generics (Generic)
 import Servant (Header', NamedRoutes, Required, Strict, type (:-), type (:>))
@@ -21,6 +22,7 @@ data ForgejoRoutes route = ForgejoRoutes
   , orgs :: route :- NamedRoutes OrgRoutes
   , orgMembers :: route :- NamedRoutes OrgMembersRoutes
   , pulls :: route :- NamedRoutes PullRequestRoutes
+  , releases :: route :- NamedRoutes ReleaseRoutes
   , repos :: route :- NamedRoutes RepoRoutes
   , statuses :: route :- NamedRoutes CommitStatusRoutes
   }
