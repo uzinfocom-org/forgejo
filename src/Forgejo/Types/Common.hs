@@ -13,6 +13,7 @@ module Forgejo.Types.Common
   , LabelId (..)
   , MilestoneId (..)
   , ReleaseId (..)
+  , AttachmentId (..)
   ) where
 
 import Data.Aeson (FromJSON, ToJSON)
@@ -61,5 +62,9 @@ newtype MilestoneId = MilestoneId Int64
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)
 
 newtype ReleaseId = ReleaseId Int64
+  deriving stock (Eq, Show)
+  deriving newtype (FromJSON, ToHttpApiData, ToJSON)
+
+newtype AttachmentId = AttachmentId Int64
   deriving stock (Eq, Show)
   deriving newtype (FromJSON, ToHttpApiData, ToJSON)
