@@ -27,5 +27,8 @@ cabal.project.local~
 .ghc.environment.*
 config.toml
 tmp/
+
+.sops/*.decrypted.*
+.sops/*.plaintext.*
 .pre-commit-config.yaml
 .direnv

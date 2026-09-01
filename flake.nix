@@ -11,12 +11,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, dream2nix, nixpkgs, nixpkgs-unstable, systems, git-hooks, treefmt-nix, }:
+  outputs = { self, dream2nix, nixpkgs, nixpkgs-unstable, systems, git-hooks
+    , treefmt-nix, }:
     let
-      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
+      eachSystem = f:
+        nixpkgs.lib.genAttrs (import systems)
+        (system: f nixpkgs.legacyPackages.${system});
       # pkgsUnstable pulled in solely for a newer fourmolu with GHC2024 support;
       # everything else still comes from the pinned nixpkgs.
-      pkgsUnstable = eachSystem (pkgs: nixpkgs-unstable.legacyPackages.${pkgs.system});
+      pkgsUnstable =
+        eachSystem (pkgs: nixpkgs-unstable.legacyPackages.${pkgs.system});
       treefmt = {
         projectRootFile = "flake.nix";
         programs.fourmolu.enable = true;
@@ -25,10 +29,12 @@
       };
       treefmtEval = eachSystem (pkgs:
         treefmt-nix.lib.evalModule pkgs (treefmt // {
-          programs.fourmolu.package = pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu;
+          programs.fourmolu.package =
+            pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu;
         }));
     in {
-      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
+      formatter =
+        eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
 
       packages = eachSystem (pkgs: {
         default = dream2nix.lib.evalModules {
@@ -88,6 +94,9 @@
               pkgs.nixfmt
               pkgs.jq
               pkgs.just
+              pkgs.sops
+              pkgs.age
+              pkgs.yq-go
             ] ++ self.checks.${pkgs.system}.pre-commit.enabledPackages;
             shellHook = ''
               echo "Welcome to Forgejo dev shell"
@@ -102,8 +111,7 @@
           };
         });
       apps = eachSystem (pkgs:
-        let
-          refresh = self.packages.${pkgs.system}.default.config.lock.refresh;
+        let refresh = self.packages.${pkgs.system}.default.config.lock.refresh;
         in {
           update-lock = {
             type = "app";
