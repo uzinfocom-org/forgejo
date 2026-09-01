@@ -5,78 +5,93 @@
 module Forgejo.Types.Release
   ( Release (..)
   , ReleasePayload (..)
+  , HookReleaseAction (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, withText, genericToJSON)
+import Data.Aeson qualified as AE
+import Data.Aeson.Encoding qualified as AE
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Forgejo.Types.Attachment (Attachment)
+import Forgejo.Types.Common (ReleaseId)
+import Forgejo.Types.Repository (Repository)
 import Forgejo.Types.TagArchiveDownloadCount (TagArchiveDownloadCount)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 
-arpOptions :: Options
-arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+relOptions :: Options
+relOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+rpOptions :: Options
+rpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 2}
 
 data Release = Release
-  { archiveDownloadCount :: TagArchiveDownloadCount
-  , assets :: [Attachment]
-  , author :: User
-  , body :: Text
-  , createdAt :: UTCTime
-  , draft :: Bool
-  , hideArchiveLinks :: Bool
-  , htmlUrl :: Text
-  , id :: Int
-  , name :: Text
-  , prerelease :: Bool
-  , publishedAt :: UTCTime
-  , tagName :: Text
-  , tarballUrl :: Text
-  , targetCommitish :: Text
-  , uploadUrl :: Text
-  , url :: Text
-  , zipballUrl :: Text
+  { relId :: ReleaseId
+  , relTagName :: Text
+  , relTargetCommitish :: Text
+  , relName :: Text
+  , relBody :: Text
+  , relUrl :: Text
+  , relHtmlUrl :: Text
+  , relTarballUrl :: Text
+  , relZipballUrl :: Text
+  , relHideArchiveLinks :: Bool
+  , relUploadUrl :: Text
+  , relDraft :: Bool
+  , relPrerelease :: Bool
+  , relCreatedAt :: UTCTime
+  , relPublishedAt :: UTCTime
+  , relAuthor :: Maybe User
+  , relAssets :: [Attachment]
+  , relArchiveDownlaodCount :: Maybe TagArchiveDownloadCount
   }
   deriving stock (Eq, Generic, Show)
 
--- Manual instance because Forgejo uses "ScheduleID" (capitalised) as the JSON key.
 instance FromJSON Release where
-  parseJSON = withObject "Release" $ \o ->
-    Release
-      <$> o .: "archive_download_count"
-      <*> o .: "assets"
-      <*> o .: "author"
-      <*> o .: "body"
-      <*> o .: "created_at"
-      <*> o .: "draft"
-      <*> o .: "hide_archive_links"
-      <*> o .: "html_url"
-      <*> o .: "id"
-      <*> o .: "name"
-      <*> o .: "prerelease"
-      <*> o .: "published_at"
-      <*> o .: "tag_name"
-      <*> o .: "tarball_url"
-      <*> o .: "target_commitish"
-      <*> o .: "upload_url"
-      <*> o .: "url"
-      <*> o .: "zipball_url"
+  parseJSON = genericParseJSON relOptions
+
+instance ToJSON Release where
+  toJSON = genericToJSON relOptions
+
+data HookReleaseAction
+  = RelPublished
+  | RelUpdated
+  | RelDeleted
+  | RelUnknown Text
+  deriving stock (Eq, Generic, Show)
+
+instance FromJSON HookReleaseAction where
+  parseJSON =
+    withText "HookReleaseAction"
+    $ pure . \case
+      "published" -> RelPublished
+      "updated" -> RelUpdated
+      "deleted" -> RelDeleted
+      x -> RelUnknown x
+
+instance ToJSON HookReleaseAction where
+  toJSON = AE.String . fromTaggedReleaseHook
+  toEncoding = AE.text . fromTaggedReleaseHook
+
+fromTaggedReleaseHook :: HookReleaseAction -> Text
+fromTaggedReleaseHook = \case
+  RelPublished -> "published"
+  RelUpdated -> "updated"
+  RelDeleted -> "deleted"
+  RelUnknown t -> t
 
 data ReleasePayload = ReleasePayload
-  { arpAction :: Text
-  , arpRun :: Release
-  , arpPriorStatus :: Text
+  { rpAction :: HookReleaseAction
+  , rpRelease :: Release
+  , rpRepository :: Repository
+  , rpSender :: User
   }
   deriving stock (Eq, Generic, Show)
 
 instance FromJSON ReleasePayload where
-  parseJSON = withObject "ReleasePayload" $ \o ->
-    ReleasePayload
-      <$> o .: "action"
-      <*> o .: "run"
-      <*> o .: "prior_status"
+  parseJSON = genericParseJSON rpOptions
+
+instance ToJSON ReleasePayload where
+  toJSON = genericToJSON rpOptions
