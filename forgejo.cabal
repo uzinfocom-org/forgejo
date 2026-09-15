@@ -25,6 +25,7 @@ library
     Forgejo.API.OrgMembers
     Forgejo.API.PullRequest
     Forgejo.API.Repository
+    Forgejo.API.Release
     Forgejo.App
     Forgejo.Error
     Forgejo.Methods.CommitStatus
@@ -32,6 +33,7 @@ library
     Forgejo.Methods.Organization
     Forgejo.Methods.OrgMembers
     Forgejo.Methods.PullRequest
+    Forgejo.Methods.Release
     Forgejo.Methods.Repository
     Forgejo.Types.ActionRun
     Forgejo.Types.ActionRunJob
