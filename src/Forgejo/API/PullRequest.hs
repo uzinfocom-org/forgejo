@@ -11,12 +11,14 @@ import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
 import Forgejo.Types.APINotFound (APINotFound)
 import Forgejo.Types.APIValidationError (APIValidationError)
+import Forgejo.Types.ChangedFile (ChangedFile)
 import Forgejo.Types.CreatePullRequestOption (CreatePullRequestOption)
 import Forgejo.Types.PullRequest (PullRequest)
+import Forgejo.Types.PullRequestCommit (PullRequestCommit)
 import Forgejo.Types.User (User)
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
-import Servant (Capture, JSON, ReqBody, UVerb, WithStatus, type (:-), type (:>))
+import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus, type (:-), type (:>))
 
 data PullRequestRoutes route = PullRequestRoutes
   { requestReviewsApi
@@ -34,6 +36,7 @@ data PullRequestRoutes route = PullRequestRoutes
                '[ WithStatus 201 [PullReviewRequest]
                 , WithStatus 422 APIValidationError
                 ]
+  -- ^ POST /repos/{owner}/{repo}/pulls/{index}/requested_reviewers
   , createPullRequestApi
       :: route
         :- "repos"
@@ -50,6 +53,46 @@ data PullRequestRoutes route = PullRequestRoutes
                 , WithStatus 409 APIError
                 , WithStatus 422 APIValidationError
                 ]
+  -- ^ POST /repos/{owner}/{repo}/pulls
+  , listPullRequestFilesApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "pulls"
+          :> Capture "index" Int
+          :> "files"
+          :> QueryParam "skip-to" Text
+          :> QueryParam "whitespace" Text
+          :> QueryParam "page" Int
+          :> QueryParam "limit" Int
+          :> UVerb
+               'GET
+               '[JSON]
+               '[ WithStatus 200 (Maybe [ChangedFile])
+                , WithStatus 404 APINotFound
+                ]
+  -- ^ GET /repos/{owner}/{repo}/pulls/{index}/files
+  , listPullRequestCommitsApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "pulls"
+          :> Capture "index" Int
+          :> "commits"
+          :> QueryParam "page" Int
+          :> QueryParam "limit" Int
+          :> QueryParam "verification" Bool
+          :> QueryParam "files" Bool
+          :> UVerb
+               'GET
+               '[JSON]
+               '[ WithStatus 200 [PullRequestCommit]
+                , WithStatus 404 APINotFound
+                , WithStatus 409 APIError
+                ]
+  -- ^ GET /repos/{owner}/{repo}/pulls/{index}/commits
   }
   deriving stock (Generic)
 

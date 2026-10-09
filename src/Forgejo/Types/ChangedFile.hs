@@ -7,7 +7,7 @@ module Forgejo.Types.ChangedFile
   , ChangedFilePayload (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), genericToJSON, withObject, (.:), (.:?))
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -15,8 +15,8 @@ import GHC.Generics (Generic)
 arpOptions :: Options
 arpOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
 
-runOptions :: Options
-runOptions = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 3}
+fileOptions :: Options
+fileOptions = defaultOptions{fieldLabelModifier = camelTo2 '_'}
 
 data ChangedFile = ChangedFile
   { additions :: Int
@@ -25,13 +25,12 @@ data ChangedFile = ChangedFile
   , deletions :: Int
   , filename :: Text
   , htmlUrl :: Text
-  , previousFilename :: Text
+  , previousFilename :: Maybe Text
   , rawUrl :: Text
   , status :: Text
   }
   deriving stock (Eq, Generic, Show)
 
--- Manual instance because Forgejo uses "ScheduleID" (capitalised) as the JSON key.
 instance FromJSON ChangedFile where
   parseJSON = withObject "ChangedFile" $ \o ->
     ChangedFile
@@ -41,12 +40,12 @@ instance FromJSON ChangedFile where
       <*> o .: "deletions"
       <*> o .: "filename"
       <*> o .: "html_url"
-      <*> o .: "previous_filename"
+      <*> o .:? "previous_filename"
       <*> o .: "raw_url"
       <*> o .: "status"
 
 instance ToJSON ChangedFile where
-  toJSON = genericToJSON runOptions
+  toJSON = genericToJSON fileOptions
 
 data ChangedFilePayload = ChangedFilePayload
   { arpAction :: Text

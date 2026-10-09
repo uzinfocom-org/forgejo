@@ -11,7 +11,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, dream2nix, nixpkgs, nixpkgs-unstable, systems, git-hooks, treefmt-nix, }:
+  outputs =
+    {
+      self,
+      dream2nix,
+      nixpkgs,
+      nixpkgs-unstable,
+      systems,
+      git-hooks,
+      treefmt-nix,
+    }:
     let
       eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
       # pkgsUnstable pulled in solely for a newer fourmolu with GHC2024 support;
@@ -23,11 +32,17 @@
         programs.cabal-fmt.enable = true;
         programs.nixfmt.enable = true;
       };
-      treefmtEval = eachSystem (pkgs:
-        treefmt-nix.lib.evalModule pkgs (treefmt // {
-          programs.fourmolu.package = pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu;
-        }));
-    in {
+      treefmtEval = eachSystem (
+        pkgs:
+        treefmt-nix.lib.evalModule pkgs (
+          treefmt
+          // {
+            programs.fourmolu.package = pkgsUnstable.${pkgs.system}.haskell.packages."ghc912".fourmolu;
+          }
+        )
+      );
+    in
+    {
       formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
 
       packages = eachSystem (pkgs: {
@@ -54,7 +69,8 @@
           };
         };
       });
-      devShells = eachSystem (pkgs:
+      devShells = eachSystem (
+        pkgs:
         let
           hlib = pkgs.haskell.lib;
           hp = pkgs.haskell.packages."ghc912".override {
@@ -62,7 +78,9 @@
               brick = hlib.dontCheck (hlib.doJailbreak super.brick);
             };
           };
-        in {
+          treefmtPackage = treefmtEval.${pkgs.system}.config.build.wrapper;
+        in
+        {
           default = pkgs.mkShell {
             nativeBuildInputs = [
               pkgs.cabal-install
@@ -84,11 +102,12 @@
               pkgs.nixd
               pkgs.statix
               pkgs.deadnix
-              treefmtEval.${pkgs.system}.config.build.wrapper
+              treefmtPackage
               pkgs.nixfmt
               pkgs.jq
               pkgs.just
-            ] ++ self.checks.${pkgs.system}.pre-commit.enabledPackages;
+            ]
+            ++ self.checks.${pkgs.system}.pre-commit.enabledPackages;
             shellHook = ''
               echo "Welcome to Forgejo dev shell"
               ${self.checks.${pkgs.system}.pre-commit.shellHook}
@@ -100,11 +119,14 @@
             '';
             NIX_CONFIG = "extra-experimental-features = nix-command flakes";
           };
-        });
-      apps = eachSystem (pkgs:
+        }
+      );
+      apps = eachSystem (
+        pkgs:
         let
           refresh = self.packages.${pkgs.system}.default.config.lock.refresh;
-        in {
+        in
+        {
           update-lock = {
             type = "app";
             program = "${pkgs.writeShellScript "update-lock" ''
@@ -112,6 +134,7 @@
               exec ${nixpkgs.lib.getExe refresh}
             ''}";
           };
-        });
+        }
+      );
     };
 }

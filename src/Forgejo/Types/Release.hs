@@ -8,7 +8,7 @@ module Forgejo.Types.Release
   , HookReleaseAction (..)
   ) where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, withText, genericToJSON)
+import Data.Aeson (FromJSON (..), ToJSON (..), genericParseJSON, genericToJSON, withText)
 import Data.Aeson qualified as AE
 import Data.Aeson.Encoding qualified as AE
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
@@ -65,11 +65,11 @@ data HookReleaseAction
 instance FromJSON HookReleaseAction where
   parseJSON =
     withText "HookReleaseAction"
-    $ pure . \case
-      "published" -> RelPublished
-      "updated" -> RelUpdated
-      "deleted" -> RelDeleted
-      x -> RelUnknown x
+      $ pure . \case
+        "published" -> RelPublished
+        "updated" -> RelUpdated
+        "deleted" -> RelDeleted
+        x -> RelUnknown x
 
 instance ToJSON HookReleaseAction where
   toJSON = AE.String . fromTaggedReleaseHook

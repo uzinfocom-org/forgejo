@@ -24,8 +24,8 @@ library
     Forgejo.API.Organization
     Forgejo.API.OrgMembers
     Forgejo.API.PullRequest
-    Forgejo.API.Repository
     Forgejo.API.Release
+    Forgejo.API.Repository
     Forgejo.App
     Forgejo.Error
     Forgejo.Methods.CommitStatus
@@ -200,6 +200,7 @@ library
     Forgejo.Types.PRBranchInfo
     Forgejo.Types.PublicKey
     Forgejo.Types.PullRequest
+    Forgejo.Types.PullRequestCommit
     Forgejo.Types.PullRequestMeta
     Forgejo.Types.PullReview
     Forgejo.Types.PullReviewComment

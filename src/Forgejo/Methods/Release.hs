@@ -4,8 +4,8 @@ import Data.Text (Text)
 import Forgejo.API (ForgejoRoutes (releases))
 import Forgejo.API.Release (ReleaseRoutes (editReleaseApi))
 import Forgejo.App (AppM, forgejo)
-import Forgejo.Types.Common (ReleaseId (..))
 import Forgejo.Error
+import Forgejo.Types.Common (ReleaseId (..))
 import Forgejo.Types.EditReleaseOption (EditReleaseOption)
 import Forgejo.Types.Release (Release)
 
