@@ -81,7 +81,7 @@ data IssueRoutes route = IssueRoutes
       :> QueryParam "team" Text
       :> QueryParam "page" Int
       :> QueryParam "limit" Int
-      :> QueryParam "sort" IssueSortBy
+      :> QueryParam "sort" Text
       :> UVerb
             'GET
             '[JSON]

@@ -33,7 +33,7 @@ createIssue CreateIssueOption{..} = do
   fg <- forgejo
   createIssueApi (issues fg) cioOwner cioRepo cioApiJson >>= liftResult
 
-searchIssue :: Text -> Text -> Text -> Text -> Int64 -> Text -> UTCTime -> UTCTime -> Bool -> Bool -> Bool -> Bool ->  Bool -> Text -> Text -> Int -> IssueSortBy -> AppM Issue
+searchIssue :: Maybe Text -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int64 -> Maybe Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Bool -> Maybe Bool -> Maybe Bool -> Maybe Bool ->  Maybe Bool -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Text -> AppM Issue
 searchIssue state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort = do
     fg <- forgejo
     searchIssueApi (issues fg) state labels milestones q priorityRepoId tayp before assigned created mentioned review_requested reviewed owner team page limit sort >>= liftResult
