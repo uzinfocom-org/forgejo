@@ -5,13 +5,16 @@ module Forgejo.Methods.Issue
   ) where
 
 import Forgejo.API (ForgejoRoutes (issues))
-import Forgejo.API.Issue (IssueRoutes (..))
+import Forgejo.API.Issue (IssueRoutes, IssueSortBy)
 import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
 import Forgejo.Types.Comment (Comment)
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.Issue (Issue)
+import Data.Text (Text)
+import Data.Time (UTCTime)
+import Data.Int (Int64)
 
 --
 
@@ -29,6 +32,12 @@ createIssue :: CreateIssueOption -> AppM Issue
 createIssue CreateIssueOption{..} = do
   fg <- forgejo
   createIssueApi (issues fg) cioOwner cioRepo cioApiJson >>= liftResult
+
+searchIssue :: Text -> Text -> Text -> Text -> Int64 -> Text -> UTCTime -> UTCTime -> Bool -> Bool -> Bool -> Bool ->  Bool -> Text -> Text -> Int -> IssueSortBy -> AppM Issue
+searchIssue state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort = do
+    fg <- forgejo
+    searchIssueApi (issues fg) state labels milestones q priorityRepoId tayp before assigned created mentioned review_requested reviewed owner team page limit sort >>= liftResult
+
 
 {- | Create a comment for issues
 

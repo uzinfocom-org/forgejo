@@ -15,7 +15,12 @@ import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
-import Servant (Capture, JSON, ReqBody, UVerb, WithStatus, type (:-), type (:>))
+import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus, type (:-), type (:>))
+import Data.Time (UTCTime)
+import Data.Int (Int64)
+
+data IssueSortBy = Relevance | Latest | Oldest | Recentupdate | Leastupdate | Mostcomment | Leastcomment | Nearduedate | Farduedate
+    deriving Show
 
 data IssueRoutes route = IssueRoutes
   { createIssueApi
@@ -55,5 +60,36 @@ data IssueRoutes route = IssueRoutes
                 , WithStatus 500 APIInternalServerError
                 ]
   -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
+  , searchIssueApi
+    :: route
+      :> "repos"
+      :> "search"
+      :> QueryParam "state" Text
+      :> QueryParam "labels" Text
+      :> QueryParam "milestones" Text
+      :> QueryParam "q" Text
+      :> QueryParam "priority_repo_id" Int64
+      :> QueryParam "type" Text
+      :> QueryParam "since" UTCTime
+      :> QueryParam "before" UTCTime
+      :> QueryParam "assigned" Bool
+      :> QueryParam "created" Bool
+      :> QueryParam "mentioned" Bool
+      :> QueryParam "review_requested" Bool
+      :> QueryParam "reviewed" Bool
+      :> QueryParam "owner" Text
+      :> QueryParam "team" Text
+      :> QueryParam "page" Int
+      :> QueryParam "limit" Int
+      :> QueryParam "sort" IssueSortBy
+      :> UVerb
+            'GET
+            '[JSON]
+            '[
+                WithStatus 200 Issue,
+                WithStatus 400 APIError,
+                WithStatus 422 APIValidationError
+            ]
+  -- ^ GET /repos/issues/search
   }
   deriving stock (Generic)
