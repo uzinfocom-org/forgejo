@@ -62,7 +62,7 @@ data IssueRoutes route = IssueRoutes
   -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
   , searchIssueApi
     :: route
-      :> "repos"
+      :- "repos"
       :> "search"
       :> QueryParam "state" Text
       :> QueryParam "labels" Text
@@ -86,7 +86,7 @@ data IssueRoutes route = IssueRoutes
             'GET
             '[JSON]
             '[
-                WithStatus 200 Issue,
+                WithStatus 200 [Issue],
                 WithStatus 400 APIError,
                 WithStatus 422 APIValidationError
             ]
