@@ -1,8 +1,10 @@
 module Forgejo.API.Issue
-  ( IssueRoutes (..)
+  ( IssueSortBy
+  , IssueRoutes (..)
   ) where
 
-import Data.Text (Text)
+import Data.Text (Text, toLower)
+import Data.Text qualified as T
 import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
 import Forgejo.Types.APIInternalServerError (APIInternalServerError)
@@ -15,12 +17,18 @@ import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
-import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus, type (:-), type (:>))
+import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus,ToHttpApiData (..), type (:-), type (:>))
 import Data.Time (UTCTime)
 import Data.Int (Int64)
 
 data IssueSortBy = Relevance | Latest | Oldest | Recentupdate | Leastupdate | Mostcomment | Leastcomment | Nearduedate | Farduedate
-    deriving Show
+    deriving (Eq, Show, Generic)
+instance ToHttpApiData IssueSortBy where
+    toQueryParam :: IssueSortBy -> Text
+    toQueryParam = toLower . T.pack . show
+
+    -- toUrlPiece :: IssueSortBy -> Text
+    -- toUrlPiece = toLower . T.pack . show
 
 data IssueRoutes route = IssueRoutes
   { createIssueApi
@@ -81,7 +89,7 @@ data IssueRoutes route = IssueRoutes
       :> QueryParam "team" Text
       :> QueryParam "page" Int
       :> QueryParam "limit" Int
-      :> QueryParam "sort" Text
+      :> QueryParam "sort" IssueSortBy
       :> UVerb
             'GET
             '[JSON]
