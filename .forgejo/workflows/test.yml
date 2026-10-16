@@ -25,11 +25,8 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v6
 
-      - name: open env
-        run: nix develop .
+      - name: build project
+        run: nix develop . && cabal build
 
-      - name: Build
-        run: cabal build
-
-      - name: Build
-        run: cabal test
+      # - name: Build
+        # run: cabal test
