@@ -22,10 +22,13 @@
       treefmt-nix,
     }:
     let
-      eachSystem = f: nixpkgs.lib.genAttrs (import systems) (system: f nixpkgs.legacyPackages.${system});
+      eachSystem = f:
+        nixpkgs.lib.genAttrs (import systems)
+        (system: f nixpkgs.legacyPackages.${system});
       # pkgsUnstable pulled in solely for a newer fourmolu with GHC2024 support;
       # everything else still comes from the pinned nixpkgs.
-      pkgsUnstable = eachSystem (pkgs: nixpkgs-unstable.legacyPackages.${pkgs.system});
+      pkgsUnstable =
+        eachSystem (pkgs: nixpkgs-unstable.legacyPackages.${pkgs.system});
       treefmt = {
         projectRootFile = "flake.nix";
         programs.fourmolu.enable = true;

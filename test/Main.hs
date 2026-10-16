@@ -1,8 +1,11 @@
 module Main (main) where
 
-import Kotiba.Server (mkApp)
+import Forgejo.IntegrationSpec qualified as IntegrationSpec
+import Forgejo.Types.EventSpec qualified as EventSpec
+import Forgejo.WebhookSpec qualified as WebhookSpec
 import Test.Hspec
-import Test.Hspec.Wai
 
 main :: IO ()
-main = print "All passed"
+main = hspec $ do
+  describe "Forgejo.Types.Event" EventSpec.spec
+  describe "Forgejo.Webhook" WebhookSpec.spec

@@ -1,0 +1,37 @@
+name: Test CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  test-flake:
+    name: "Test flake"
+    runs-on: native
+
+    steps:
+      - name: Clone the repository
+        # uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+
+      - name: Check up flake configuration
+        run: nix flake check --show-trace
+
+  build-and-project:
+    name: "Build and test"
+    runs-on: native
+
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v7
+
+      - name: build project
+        run: | 
+          nix develop 
+          cabal build
+        # run: nix develop . && cabal build
+
+      # - name: Build
+        # run: cabal test
