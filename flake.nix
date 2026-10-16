@@ -128,6 +128,13 @@
         pkgs:
         let
           refresh = self.packages.${pkgs.system}.default.config.lock.refresh;
+          e2etest = {
+            type = "app";
+            program = "${pkgs.writeShellScript "update-lock" ''
+              cabal build
+              cabal test
+            ''}";
+          };
         in
         {
           update-lock = {
@@ -137,6 +144,7 @@
               exec ${nixpkgs.lib.getExe refresh}
             ''}";
           };
+          inherit e2etest;
         }
       );
     };

@@ -27,11 +27,8 @@ jobs:
       - name: Clone the repository
         uses: actions/checkout@v7
 
-      - name: build project
-        run: | 
-          nix develop .
-          cabal build
-        # run: nix develop . && cabal build
+      - name: Build and test project
+        run: nix run .\#e2etest
 
       # - name: Build
         # run: cabal test
