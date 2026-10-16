@@ -29,7 +29,7 @@ jobs:
 
       - name: build project
         run: | 
-          nix develop 
+          nix develop .
           cabal build
         # run: nix develop . && cabal build
 
