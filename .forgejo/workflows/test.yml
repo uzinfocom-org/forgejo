@@ -12,7 +12,9 @@ jobs:
 
     steps:
       - name: Clone the repository
-        uses: actions/checkout@v6
+        # uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
 
       - name: Check up flake configuration
         run: nix flake check --show-trace
@@ -23,7 +25,7 @@ jobs:
 
     steps:
       - name: Clone the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: build project
         run: | 
