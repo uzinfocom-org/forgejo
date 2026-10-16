@@ -26,7 +26,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: build project
-        run: nix develop && cabal build
+        run: | 
+          nix develop 
+          cabal build
         # run: nix develop . && cabal build
 
       # - name: Build
