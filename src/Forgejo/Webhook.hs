@@ -14,7 +14,7 @@ module Forgejo.Webhook
 import Control.Monad.Error.Class (MonadError)
 import Crypto.Hash (Digest, SHA256 (..), digestFromByteString)
 import Crypto.MAC.HMAC (HMAC (..), hmac)
-import Control.Monad (unless, mzero)
+import Control.Monad (unless)
 import Data.Aeson (Value, parseJSON, eitherDecode)
 import Data.Aeson.Types (parseEither)
 import Data.ByteArray.Encoding qualified as BAE
@@ -33,6 +33,7 @@ import Forgejo.Types.Release (ReleasePayload)
 import Network.HTTP.Media ((//))
 import Servant
 
+-- | Custom content type used to capture both the raw lazy byte string and the decoded JSON value.
 data RawAndJSON
 
 instance Accept RawAndJSON where
@@ -52,6 +53,7 @@ type FGEventTy = Header' '[Optional, Lenient] "x-forgejo-event-type" ForgejoEven
 -- | Unique id of a delivery. It is optional on purpose, a sender which is not Forgejo may not send it. A duplicated header is rejected.
 type FGDelivery = Header' '[Optional, Strict] "x-forgejo-delivery" Text
 
+-- | Header containing the HMAC-SHA256 signature sent by Forgejo (@X-Forgejo-Signature@).
 type FGSignature = Header' '[Optional, Strict] "x-forgejo-signature" Text
 
 -- | Payload of a delivery, parsed according to its event.
@@ -103,6 +105,9 @@ type WebhookAPI =
   :> ReqBody '[RawAndJSON] (BSL.ByteString, Value)
   :> Post '[JSON] ()
 
+{- | Verifies a Forgejo HMAC-SHA256 signature against the request body.
+   Returns 'True' if the signature matches the expected hash computed with the secret key.
+-}
 verifySignature :: BS.ByteString -> BS.ByteString -> BS.ByteString -> Bool
 verifySignature key msg sigHex =
   case BAE.convertFromBase BAE.Base16 sigHex :: Either String BS.ByteString of
