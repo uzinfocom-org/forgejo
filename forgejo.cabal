@@ -276,6 +276,7 @@ library
     , conduit
     , conduit-combinators
     , containers
+    , crypton
     , filepath
     , generic-lens
     , http-api-data
@@ -283,6 +284,7 @@ library
     , http-media
     , http-types
     , lens
+    , memory
     , monad-logger
     , mtl
     , named
