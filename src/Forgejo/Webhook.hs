@@ -13,7 +13,8 @@ module Forgejo.Webhook
 
 import Control.Monad.Error.Class (MonadError)
 import Crypto.Hash (Digest, SHA256 (..), digestFromByteString)
-import Crypto.MAC.HMAC (HMAC (..), hmac, hmacGetDigest)
+import Crypto.MAC.HMAC (HMAC (..), hmac)
+import Control.Monad (unless, mzero)
 import Data.Aeson (Value, parseJSON, eitherDecode)
 import Data.Aeson.Types (parseEither)
 import Data.ByteArray.Encoding qualified as BAE
@@ -102,19 +103,6 @@ type WebhookAPI =
   :> ReqBody '[RawAndJSON] (BSL.ByteString, Value)
   :> Post '[JSON] ()
 
--- verifySignature :: ByteString -> Maybe Text -> BSL.ByteString -> Bool
--- verifySignature _ Nothing _ = False
--- verifySignature secret (Just sig) rawBody =
---   case BAE.convertFromBase BAE.Base16 (encodeUtf8 sig) of
---     Left _ -> False
---     Right sigBytes ->
---       let computedHmac :: HMAC SHA256
---           computedHmac = hmac secret (BSL.toStrict rawBody)
-
---           hexDigest :: ByteString
---           hexDigest = BAE.convertToBase BAE.Base16 (hmacGetDigest computedHmac)
---       in BA.constEq hexDigest (encodeUtf8 sig)
-
 verifySignature :: BS.ByteString -> BS.ByteString -> BS.ByteString -> Bool
 verifySignature key msg sigHex =
   case BAE.convertFromBase BAE.Base16 sigHex :: Either String BS.ByteString of
@@ -128,9 +116,7 @@ verifySignature key msg sigHex =
   * malformed body: answers 400
   * event which we don't handle: answers 200, the callback is not called
   * event header is missing or unknown: answers 200, the callback is not called
-
-  FIXME: the body is already parsed when we get it, so the signature of a delivery
-  (@X-Forgejo-Signature@) can't be verified here. Need the raw body for it.
+  * signature header is missing or invalid: answers 401
 -}
 webhookHandlerWith
   :: (MonadError ServerError m)
@@ -143,27 +129,29 @@ webhookHandlerWith
   -> (BSL.ByteString, Value)
   -> m ()
 webhookHandlerWith secret cb mEvent mEventType mDeliveryId mSig (rawBody, body) = do
-  sig <- case mSig of
-    Nothing -> throwError signatureErr
-    Just s -> pure s
+  sig <- maybe (throwError signatureErr) pure mSig
+  unless (verifySignature secret (BS.toStrict rawBody) (encodeUtf8 sig)) $
+    throwError signatureErr
 
-  if not (verifySignature secret (BS.toStrict rawBody) (encodeUtf8 sig))
-    then throwError signatureErr
-    else case mEvent of
-          Just (Right event) ->
-            case parseWebhookPayload event body of
-              Left err -> throwError err400{errBody = BSLC.pack err}
-              Right Nothing -> pure ()
-              Right (Just payload) -> do
-                let delivery =
-                      Delivery
-                        { deliveryId = mDeliveryId
-                        , deliveryEvent = event
-                        , deliveryEventType = mEventType >>= either (const Nothing) Just
-                        }
-                cb delivery payload
-          _ -> pure ()
+  case mEvent of
+    Just (Right event) -> do
+      payload <- case parseWebhookPayload event body of
+        Left err -> throwError err400{errBody = BSLC.pack err}
+        Right res -> pure res
 
+      case payload of
+        Just p -> cb delivery p
+        Nothing -> pure ()
+    _ -> pure ()
+ where
+  delivery =
+    Delivery
+      { deliveryId = mDeliveryId
+      , deliveryEvent = maybe (error "unreachable") id (mEvent >>= either (const Nothing) Just) -- or handle cleanly
+      , deliveryEventType = mEventType >>= either (const Nothing) Just
+      }
+
+-- | Error returned when the signature is missing or fails verification.
 signatureErr :: ServerError
 signatureErr = err401{errBody = BSLC.pack "Invalid or missing X-Forgejo-Signature"}
 
