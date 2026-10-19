@@ -125,50 +125,49 @@ verifySignature key msg sigHex =
 -}
 webhookHandlerWith
   :: (MonadError ServerError m)
-  => BS.ByteString
-  -> (Delivery -> WebhookPayload -> m ())
+  => (Delivery -> WebhookPayload -> m ())
+  -> Maybe BS.ByteString
   -> Maybe (Either Text ForgejoEvent)
   -> Maybe (Either Text ForgejoEventType)
   -> Maybe Text
   -> Maybe Text
   -> (BSL.ByteString, Value)
   -> m ()
-webhookHandlerWith secret cb mEvent mEventType mDeliveryId mSig (rawBody, body) = do
-  sig <- maybe (throwError signatureErr) pure mSig
-  unless (verifySignature secret (BS.toStrict rawBody) (encodeUtf8 sig)) $
-    throwError signatureErr
+webhookHandlerWith cb mSecret mEvent mEventType mDeliveryId mSig (rawBody, body) = do
+  case (mSecret, mSig) of
+    (Just secret, Just sig) ->
+      unless (verifySignature secret (BS.toStrict rawBody) (encodeUtf8 sig)) $
+        throwError invalidSig
+    _ -> pure ()
 
   case mEvent of
     Just (Right event) -> do
-      payload <- case parseWebhookPayload event body of
-        Left err -> throwError err400{errBody = BSLC.pack err}
-        Right res -> pure res
+      let delivery = Delivery
+            { deliveryId        = mDeliveryId
+            , deliveryEvent     = event
+            , deliveryEventType = mEventType >>= either (const Nothing) Just
+            }
 
-      case payload of
-        Just p -> cb delivery p
-        Nothing -> pure ()
+      case parseWebhookPayload event body of
+        Left err -> throwError err400 { errBody = BSLC.pack err }
+        Right (Just p) -> cb delivery p
+        Right Nothing  -> pure ()
+
     _ -> pure ()
- where
-  delivery =
-    Delivery
-      { deliveryId = mDeliveryId
-      , deliveryEvent = maybe (error "unreachable") id (mEvent >>= either (const Nothing) Just) -- or handle cleanly
-      , deliveryEventType = mEventType >>= either (const Nothing) Just
-      }
 
 -- | Error returned when the signature is missing or fails verification.
-signatureErr :: ServerError
-signatureErr = err401{errBody = BSLC.pack "Invalid or missing X-Forgejo-Signature"}
+invalidSig :: ServerError
+invalidSig = err401{errBody = BSLC.pack "Invalid X-Forgejo-Signature"}
 
 -- | Same as 'webhookHandlerWith' for callbacks which don't need the 'Delivery'.
 webhookHandler
   :: (MonadError ServerError m)
-  => BS.ByteString
-  -> (WebhookPayload -> m ())
+  => (WebhookPayload -> m ())
+  -> Maybe BS.ByteString
   -> Maybe (Either Text ForgejoEvent)
   -> Maybe (Either Text ForgejoEventType)
   -> Maybe Text
   -> Maybe Text
   -> (BSL.ByteString, Value)
   -> m ()
-webhookHandler secret cb = webhookHandlerWith secret (const cb)
+webhookHandler cb secret = webhookHandlerWith (const cb) secret
