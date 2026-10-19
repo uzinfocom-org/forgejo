@@ -1,8 +1,11 @@
 module Main (main) where
 
-import Kotiba.Server (mkApp)
+import Forgejo ()
 import Test.Hspec
-import Test.Hspec.Wai
 
 main :: IO ()
-main = print "All passed"
+main =
+  hspec
+    $ describe "forgejo"
+    $ it "links the library"
+    $ True `shouldBe` True
