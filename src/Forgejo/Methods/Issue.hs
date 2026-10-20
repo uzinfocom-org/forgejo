@@ -3,10 +3,11 @@ module Forgejo.Methods.Issue
   ( createIssue
   , createIssueComment
   , searchIssue
+  , listIssues
   ) where
 
 import Forgejo.API (ForgejoRoutes (issues))
-import Forgejo.API.Issue (IssueSortBy, IssueRoutes (..))
+import Forgejo.API.Issue (IssueSortBy, IssueState, IssueType, IssueRoutes (..))
 import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
 import Forgejo.Types.Comment (Comment)
@@ -34,22 +35,31 @@ createIssue CreateIssueOption{..} = do
   fg <- forgejo
   createIssueApi (issues fg) cioOwner cioRepo cioApiJson >>= liftResult
 
+
+{- | list issues in a repository.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
+-}
+listIssues :: Text -> Text -> Maybe IssueState -> Maybe Text -> Maybe Text -> Maybe IssueType -> Maybe Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Int -> Maybe IssueSortBy -> AppM [Issue]
+listIssues owner repo state labels q tip milestone since before createBy assignedBy mentionedBy page limit sort = do
+    fg <- forgejo
+    listIssuesApi (issues fg) owner repo state labels q tip milestone since before createBy assignedBy mentionedBy page limit sort >>= liftResult
+
+
 {- | Search an issue in a repository.
 
   Possible errors:
 
-  * 'ErrForbidden': token lacks write access to issues
-  * 'ErrNotFound': owner or repository does not exist
-  * 'ErrConflict': issue with same reference already exists
+  * 'ErrApi: Bad Request
   * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
-  * 'ErrRepoArchived': repository is archived
 -}
-searchIssue :: Maybe Text -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int64 -> Maybe Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Bool -> Maybe Bool -> Maybe Bool -> Maybe Bool ->  Maybe Bool -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Int -> Maybe IssueSortBy -> AppM [Issue]
+searchIssue :: Maybe IssueState -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int64 -> Maybe IssueType -> Maybe UTCTime -> Maybe UTCTime -> Maybe Bool -> Maybe Bool -> Maybe Bool -> Maybe Bool ->  Maybe Bool -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Int -> Maybe IssueSortBy -> AppM [Issue]
 searchIssue state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort = do
     fg <- forgejo
     searchIssueApi (issues fg) state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort >>= liftResult
-
-
 {- | Create a comment for issues
 
   Possible errors:

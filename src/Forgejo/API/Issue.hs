@@ -1,5 +1,7 @@
 module Forgejo.API.Issue
   ( IssueSortBy
+  , IssueState
+  , IssueType
   , IssueRoutes (..)
   ) where
 
@@ -29,6 +31,19 @@ instance ToHttpApiData IssueSortBy where
 
     -- toUrlPiece :: IssueSortBy -> Text
     -- toUrlPiece = toLower . T.pack . show
+
+data IssueState = Open | Closed | All
+    deriving (Eq, Show, Generic)
+instance ToHttpApiData IssueState where
+    toQueryParam :: IssueState -> Text
+    toQueryParam = toLower . T.pack . show
+
+data IssueType = Issues | Pulls
+    deriving (Eq, Show, Generic)
+instance ToHttpApiData IssueType where
+    toQueryParam :: IssueType -> Text
+    toQueryParam = toLower . T.pack . show
+
 
 data IssueRoutes route = IssueRoutes
   { createIssueApi
@@ -68,16 +83,44 @@ data IssueRoutes route = IssueRoutes
                 , WithStatus 500 APIInternalServerError
                 ]
   -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
+  , listIssuesApi
+    :: route
+        :- "repos"
+            :> Capture "owner" Text
+            :> Capture "repo" Text
+            :> "issues"
+            :> QueryParam "state" IssueState
+            :> QueryParam "labels" Text
+            :> QueryParam "q" Text
+            :> QueryParam "type" IssueType
+            :> QueryParam "milestone" Text
+            :> QueryParam "since" UTCTime
+            :> QueryParam "before" UTCTime
+            :> QueryParam "created_by" Text
+            :> QueryParam "assigned_by" Text
+            :> QueryParam "mentioned_by" Text
+            :> QueryParam "page" Int
+            :> QueryParam "limit" Int
+            :> QueryParam "sort" IssueSortBy
+            :> UVerb
+                  'GET
+                  '[JSON]
+                  '[
+                      WithStatus 200 [Issue],
+                      WithStatus 404 APINotFound,
+                      WithStatus 422 APIValidationError
+                  ]
+    -- ^ GET /repos/{owner}/{repo}/issues
   , searchIssueApi
     :: route
       :- "repos"
       :> "search"
-      :> QueryParam "state" Text
+      :> QueryParam "state" IssueState
       :> QueryParam "labels" Text
       :> QueryParam "milestones" Text
       :> QueryParam "q" Text
       :> QueryParam "priority_repo_id" Int64
-      :> QueryParam "type" Text
+      :> QueryParam "type" IssueType
       :> QueryParam "since" UTCTime
       :> QueryParam "before" UTCTime
       :> QueryParam "assigned" Bool
@@ -99,5 +142,6 @@ data IssueRoutes route = IssueRoutes
                 WithStatus 422 APIValidationError
             ]
   -- ^ GET /repos/issues/search
+
   }
   deriving stock (Generic)
