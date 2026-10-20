@@ -317,14 +317,19 @@ library
     RecordWildCards
 
 test-suite forgejo-test
-  import:           warnings
-  type:             exitcode-stdio-1.0
-  main-is:          Main.hs
-  hs-source-dirs:   test
+  import:             warnings
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  hs-source-dirs:     test
   build-depends:
     , base
     , forgejo
     , hspec
     , hspec-wai
 
-  default-language: GHC2021
+  default-language:   GHC2021
+  default-extensions:
+    DeriveAnyClass
+    LambdaCase
+    OverloadedRecordDot
+    OverloadedStrings
