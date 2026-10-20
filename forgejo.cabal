@@ -347,6 +347,7 @@ test-suite forgejo-test
 
   default-language:   GHC2021
   default-extensions:
+    DeriveAnyClass
     LambdaCase
     OverloadedRecordDot
     OverloadedStrings

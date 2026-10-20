@@ -1,0 +1,2 @@
+# gain fields later, so keep them as `data`.
+- ignore: { name: "Use newtype instead of data" }
