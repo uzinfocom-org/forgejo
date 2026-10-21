@@ -36,7 +36,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          FORGEJO_URL: ${{ secrets.FORGEJO_URL }}
-          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
-          FORGEJO_ORG: ${{ secrets.FORGEJO_ORG }}
+          FORGEJO_URL: ${{ secrets.FG_URL }}
+          FORGEJO_TOKEN: ${{ secrets.FG_TOKEN }}
+          FORGEJO_ORG: ${{ secrets.FG_ORG }}
         run: nix run .#e2etest
