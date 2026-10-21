@@ -2,6 +2,11 @@ name: Test CI
 
 on:
   workflow_dispatch:
+    inputs:
+      integration:
+        description: "Run integration tests"
+        type: boolean
+        default: false
   push:
   pull_request:
 
@@ -12,23 +17,26 @@ jobs:
 
     steps:
       - name: Clone the repository
-        # uses: actions/checkout@v6
         uses: actions/checkout@v7
 
-
+      # Builds the package and runs unit tests
+      # skipped here FORGEJO_* variables are not set.
       - name: Check up flake configuration
         run: nix flake check --show-trace
 
-  build-and-project:
-    name: "Build and test"
+  integration:
+    name: "Integration tests"
     runs-on: native
+    # Only on a manual run with the "integration" box ticked.
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.integration == 'true'
 
     steps:
       - name: Clone the repository
         uses: actions/checkout@v7
 
-      - name: Build and test project
-        run: nix run .\#e2etest
-
-      # - name: Build
-        # run: cabal test
+      - name: Run integration tests
+        env:
+          FORGEJO_URL: ${{ secrets.FORGEJO_URL }}
+          FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
+          FORGEJO_ORG: ${{ secrets.FORGEJO_ORG }}
+        run: nix run .#e2etest
