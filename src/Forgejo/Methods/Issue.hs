@@ -5,6 +5,7 @@ module Forgejo.Methods.Issue
   , searchIssues
   , createIssueComment
   , listIssueComments
+  , getIssueCommentApi
   ) where
 
 import Forgejo.API (ForgejoRoutes (issues))
@@ -77,7 +78,28 @@ createIssueComment CreateIssueCommentOption{..} = do
   fg <- forgejo
   createIssueCommentApi (issues fg) ciscoOwner ciscoRepo ciscoIndex ciscoApiJson >>= liftResult
 
+{- | List comments for issue
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
+  * 'ErrServer': internal server error occured
+-}
 listIssueComments :: ListIssueCommentsOption -> AppM [Comment]
 listIssueComments ListIssueCommentsOption{..} = do
     fg <- forgejo
     listIssueCommentsApi (issues fg) licoOwner licoRepo licoSince licoBefore licoPage licoLimit >>= liftResult
+
+{- | List comments for issue
+
+  Possible errors:
+
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrServer': internal server error occured
+-}
+getIssueComment :: Text -> Text -> Int64 -> AppM Comment
+getIssueComment owner repo id = do
+    fg <- forgejo
+    getIssueCommentApi (issues fg) owner repo id >>= liftResult

@@ -19,14 +19,20 @@ import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
-import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus,ToHttpApiData (..), type (:-), type (:>))
+import Servant (Capture, JSON, QueryParam, ReqBody, NoContent, UVerb, WithStatus,ToHttpApiData (..), type (:-), type (:>))
 import Data.Time (UTCTime)
 import Data.Int (Int64)
-import Data.Aeson (ToJSON)
+import Data.Aeson (ToJSON, FromJSON)
+
 
 data IssueSortBy = Relevance | Latest | Oldest | Recentupdate | Leastupdate | Mostcomment | Leastcomment | Nearduedate | Farduedate
     deriving (Eq, Show, Generic)
 instance ToJSON IssueSortBy
+
+
+deriving instance FromJSON NoContent
+-- deriving instance Generic NoContent
+
 
 instance ToHttpApiData IssueSortBy where
     toQueryParam :: IssueSortBy -> Text
@@ -169,6 +175,25 @@ data IssueRoutes route = IssueRoutes
                 WithStatus 422 APIValidationError,
                 WithStatus 500 APIInternalServerError
             ]
-    -- ^ GET /repos/{owner}/{repo}/issues
+    -- ^ GET /repos/{owner}/{repo}/issues/comments
+    , getIssueCommentApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> "comments"
+          :> Capture "id" Int64
+          :> UVerb
+              'GET
+              '[JSON]
+              '[
+                  WithStatus 200 Comment,
+                  -- WithStatus 204 NoContent,
+                  WithStatus 403 APIForbiddenError,
+                  WithStatus 404 APINotFound,
+                  WithStatus 500 APIInternalServerError
+              ]
+      -- ^ GET /repos/{owner}/{repo}/issues/comments/{id}
   }
   deriving stock (Generic)
