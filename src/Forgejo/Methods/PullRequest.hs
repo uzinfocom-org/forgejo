@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Forgejo.Methods.PullRequest (PullReviewRequestOptions (..), addReviewer, createPullRequest, getPullRequestFiles, getPullRequestCommits)
 where
 

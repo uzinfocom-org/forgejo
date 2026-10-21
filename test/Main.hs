@@ -1,11 +1,12 @@
 module Main (main) where
 
-import Forgejo ()
+import Forgejo.IntegrationSpec qualified as IntegrationSpec
+import Forgejo.Types.EventSpec qualified as EventSpec
+import Forgejo.WebhookSpec qualified as WebhookSpec
 import Test.Hspec
 
 main :: IO ()
-main =
-  hspec
-    $ describe "forgejo"
-    $ it "links the library"
-    $ True `shouldBe` True
+main = hspec $ do
+  describe "Forgejo.Types.Event" EventSpec.spec
+  describe "Forgejo.Webhook" WebhookSpec.spec
+  describe "Forgejo.Integration" IntegrationSpec.spec
