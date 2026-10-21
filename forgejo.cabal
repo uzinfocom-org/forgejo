@@ -172,6 +172,8 @@ library
     Forgejo.Types.LabelTemplateInfo
     Forgejo.Types.LicensesTemplateListEntry
     Forgejo.Types.ListActionRunResponse
+    Forgejo.Types.ListIssuesOption
+    Forgejo.Types.ListIssueCommentsOption
     Forgejo.Types.MarkdownOption
     Forgejo.Types.MarkupOption
     Forgejo.Types.MergePullRequestOption
@@ -237,6 +239,7 @@ library
     Forgejo.Types.RepoTopicOptions
     Forgejo.Types.RepoTransfer
     Forgejo.Types.SearchResults
+    Forgejo.Types.SearchIssuesOption
     Forgejo.Types.Secret
     Forgejo.Types.ServerVersion
     Forgejo.Types.SetUserQuotaGroupsOptions

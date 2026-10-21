@@ -2,7 +2,7 @@
 module Forgejo.Methods.Issue
   ( createIssue
   , listIssues
-  , searchIssue
+  , searchIssues
   , createIssueComment
   , listIssueComments
   ) where
@@ -14,6 +14,9 @@ import Forgejo.Error
 import Forgejo.Types.Comment (Comment)
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.CreateIssueOption
+import Forgejo.Types.ListIssuesOption
+import Forgejo.Types.SearchIssuesOption
+import Forgejo.Types.ListIssueCommentsOption
 import Forgejo.Types.Issue (Issue)
 import Data.Text (Text)
 import Data.Time (UTCTime)
@@ -44,11 +47,10 @@ createIssue CreateIssueOption{..} = do
   * 'ErrNotFound': owner or repository does not exist
   * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
 -}
-listIssues :: Text -> Text -> Maybe IssueState -> Maybe Text -> Maybe Text -> Maybe IssueType -> Maybe Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Int -> Maybe IssueSortBy -> AppM [Issue]
-listIssues owner repo state labels q tip milestone since before createBy assignedBy mentionedBy page limit sort = do
+listIssues :: ListIssuesOption -> AppM [Issue]
+listIssues ListIssuesOption{..} = do
     fg <- forgejo
-    listIssuesApi (issues fg) owner repo state labels q tip milestone since before createBy assignedBy mentionedBy page limit sort >>= liftResult
-
+    listIssuesApi (issues fg) lioOwner lioRepo lioState lioLabels lioQ lioType lioMilestone lioSince lioBefore lioCreatedBy lioAssignedBy lioMentionedBy lioPage lioLimit lioSort >>= liftResult
 
 {- | Search an issue in a repository.
 
@@ -57,10 +59,10 @@ listIssues owner repo state labels q tip milestone since before createBy assigne
   * 'ErrApi: Bad Request
   * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
 -}
-searchIssue :: Maybe IssueState -> Maybe Text -> Maybe Text -> Maybe Text -> Maybe Int64 -> Maybe IssueType -> Maybe UTCTime -> Maybe UTCTime -> Maybe Bool -> Maybe Bool -> Maybe Bool -> Maybe Bool ->  Maybe Bool -> Maybe Text -> Maybe Text -> Maybe Int -> Maybe Int -> Maybe IssueSortBy -> AppM [Issue]
-searchIssue state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort = do
+searchIssues :: SearchIssuesOption -> AppM [Issue]
+searchIssues SearchIssuesOption{..} = do
     fg <- forgejo
-    searchIssueApi (issues fg) state labels milestones q priorityRepoId tayp since before assigned created mentioned review_requested reviewed owner team page limit sort >>= liftResult
+    searchIssuesApi (issues fg) sioState sioLabels sioMilestones sioQ sioPriorityRepoId sioType sioSince sioBefore sioAssigned sioCreated sioMentioned sioReviewRequested sioReviewed sioOwner sioTeam sioPage sioLimit sioSort >>= liftResult
 {- | Create a comment for issues
 
   Possible errors:
@@ -75,7 +77,7 @@ createIssueComment CreateIssueCommentOption{..} = do
   fg <- forgejo
   createIssueCommentApi (issues fg) ciscoOwner ciscoRepo ciscoIndex ciscoApiJson >>= liftResult
 
-listIssueComments :: Text -> Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Int -> Maybe Int -> AppM [Comment]
-listIssueComments owner repo since before page limit = do
+listIssueComments :: ListIssueCommentsOption -> AppM [Comment]
+listIssueComments ListIssueCommentsOption{..} = do
     fg <- forgejo
-    listIssueCommentsApi (issues fg) owner repo since before page limit >>= liftResult
+    listIssueCommentsApi (issues fg) licoOwner licoRepo licoSince licoBefore licoPage licoLimit >>= liftResult

@@ -22,9 +22,12 @@ import Network.HTTP.Types (StdMethod (..))
 import Servant (Capture, JSON, QueryParam, ReqBody, UVerb, WithStatus,ToHttpApiData (..), type (:-), type (:>))
 import Data.Time (UTCTime)
 import Data.Int (Int64)
+import Data.Aeson (ToJSON)
 
 data IssueSortBy = Relevance | Latest | Oldest | Recentupdate | Leastupdate | Mostcomment | Leastcomment | Nearduedate | Farduedate
     deriving (Eq, Show, Generic)
+instance ToJSON IssueSortBy
+
 instance ToHttpApiData IssueSortBy where
     toQueryParam :: IssueSortBy -> Text
     toQueryParam = toLower . T.pack . show
@@ -34,12 +37,16 @@ instance ToHttpApiData IssueSortBy where
 
 data IssueState = Open | Closed | All
     deriving (Eq, Show, Generic)
+instance ToJSON IssueState
+
 instance ToHttpApiData IssueState where
     toQueryParam :: IssueState -> Text
     toQueryParam = toLower . T.pack . show
 
 data IssueType = Issues | Pulls
     deriving (Eq, Show, Generic)
+instance ToJSON IssueType
+
 instance ToHttpApiData IssueType where
     toQueryParam :: IssueType -> Text
     toQueryParam = toLower . T.pack . show
@@ -111,7 +118,7 @@ data IssueRoutes route = IssueRoutes
                       WithStatus 422 APIValidationError
                   ]
     -- ^ GET /repos/{owner}/{repo}/issues
-  , searchIssueApi
+  , searchIssuesApi
     :: route
       :- "repos"
       :> "search"
