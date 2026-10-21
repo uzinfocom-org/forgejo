@@ -142,6 +142,26 @@ data IssueRoutes route = IssueRoutes
                 WithStatus 422 APIValidationError
             ]
   -- ^ GET /repos/issues/search
-
+  , listIssueCommentsApi
+    :: route
+      :- "repos"
+        :> Capture "owner" Text
+        :> Capture "repo" Text
+        :> "issues"
+        :> "comments"
+        :> QueryParam "since" UTCTime
+        :> QueryParam "before" UTCTime
+        :> QueryParam "page" Int
+        :> QueryParam "limit" Int
+        :> UVerb
+            'GET
+            '[JSON]
+            '[
+                WithStatus 200 [Comment],
+                WithStatus 404 APINotFound,
+                WithStatus 422 APIValidationError,
+                WithStatus 500 APIInternalServerError
+            ]
+    -- ^ GET /repos/{owner}/{repo}/issues
   }
   deriving stock (Generic)

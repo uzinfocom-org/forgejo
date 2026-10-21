@@ -1,9 +1,10 @@
 -- | This module contains all issue related APIs.
 module Forgejo.Methods.Issue
   ( createIssue
-  , createIssueComment
-  , searchIssue
   , listIssues
+  , searchIssue
+  , createIssueComment
+  , listIssueComments
   ) where
 
 import Forgejo.API (ForgejoRoutes (issues))
@@ -73,3 +74,8 @@ createIssueComment :: CreateIssueCommentOption -> AppM Comment
 createIssueComment CreateIssueCommentOption{..} = do
   fg <- forgejo
   createIssueCommentApi (issues fg) ciscoOwner ciscoRepo ciscoIndex ciscoApiJson >>= liftResult
+
+listIssueComments :: Text -> Text -> Maybe UTCTime -> Maybe UTCTime -> Maybe Int -> Maybe Int -> AppM [Comment]
+listIssueComments owner repo since before page limit = do
+    fg <- forgejo
+    listIssueCommentsApi (issues fg) owner repo since before page limit >>= liftResult
