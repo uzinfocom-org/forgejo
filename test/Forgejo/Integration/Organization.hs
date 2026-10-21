@@ -8,7 +8,7 @@ import Forgejo.Types.Repository (Repository (..))
 import Test.Hspec
 
 spec :: Maybe Text -> SpecWith AppEnv
-spec Nothing = it "org tests (set FORGEJO_ORG to enable)" (\_env -> pending)
+spec Nothing = it "org tests (set FORGEJO_ORG to enable)" (const pending)
 spec (Just org) = do
   describe "getOrgMember" $ do
     it "returns a list of members for an existing organisation" $ \env -> do
@@ -20,7 +20,7 @@ spec (Just org) = do
     it "returns ErrNotFound for a nonexistent organisation" $ \env -> do
       result <- runForgejo env (getOrgMember "org-xyz-does-not-exist")
       result `shouldSatisfy` \case
-        Left (ErrNotFound _ _ _) -> True
+        Left (ErrNotFound{}) -> True
         _ -> False
 
   describe "createOrgRepository"

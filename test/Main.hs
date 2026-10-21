@@ -9,3 +9,4 @@ main :: IO ()
 main = hspec $ do
   describe "Forgejo.Types.Event" EventSpec.spec
   describe "Forgejo.Webhook" WebhookSpec.spec
+  describe "Forgejo.Integration" IntegrationSpec.spec

@@ -1,28 +1,30 @@
 module Forgejo.Integration.Issue (spec) where
 
-import Data.Text (Text)
-import Forgejo (AppEnv, ForgejoError (..), createIssue, runForgejo)
+import Forgejo (AppEnv, ForgejoError (..), User (..), createIssue, createRepository, runForgejo)
+import Forgejo.Integration.Helpers (uniqueName, withCreatedRepo)
 import Forgejo.Methods.Issue (createIssueComment)
 import Forgejo.Types.Comment (Comment (..))
 import Forgejo.Types.CreateIssueCommentOption (CreateIssueCommentApiOption (..), CreateIssueCommentOption (..))
 import Forgejo.Types.CreateIssueOption (CreateIssueApiOption (..), CreateIssueOption (..))
+import Forgejo.Types.CreateRepositoryOption (CreateRepositoryOption (..))
 import Forgejo.Types.Issue (Issue (..))
+import Forgejo.Types.Repository (Repository (..))
 import Test.Hspec
 
-spec :: Text -> Text -> SpecWith AppEnv
-spec owner repo = do
+spec :: SpecWith AppEnv
+spec = do
   describe "createIssue"
-    $ beforeAllWith (\env -> (env,) <$> setupIssue env owner repo)
+    $ aroundAllWith withIssue
     $ do
-      it "creates an issue with the expected title" $ \(_, issue) ->
+      it "creates an issue with the expected title" $ \(_, _, issue) ->
         issue.issueTitle `shouldBe` "Integration test issue"
 
-      it "creates a comment on the issue" $ \(env, issue) -> do
+      it "creates a comment on the issue" $ \(env, r, issue) -> do
         let opt =
               CreateIssueCommentOption
-                owner
-                repo
-                (issue.issueNumber)
+                r.repoOwner.userLogin
+                r.repoName
+                issue.issueNumber
                 (CreateIssueCommentApiOption "integration test comment")
         result <- runForgejo env (createIssueComment opt)
         case result of
@@ -39,15 +41,25 @@ spec owner repo = do
               (CreateIssueApiOption "t" Nothing [] Nothing Nothing Nothing Nothing Nothing)
       result <- runForgejo env (createIssue opt)
       result `shouldSatisfy` \case
-        Left (ErrNotFound _ _ _) -> True
+        Left (ErrNotFound{}) -> True
         _ -> False
 
 -- ---------------------------------------------------------------------------
 
-setupIssue :: AppEnv -> Text -> Text -> IO Issue
-setupIssue env owner repo = do
+{- | Create a throwaway repository with one issue in it for the whole group,
+deleting the repository once every test in the group has run.
+-}
+withIssue :: ((AppEnv, Repository, Issue) -> IO ()) -> AppEnv -> IO ()
+withIssue action env = do
+  name <- uniqueName "hspec-issues"
+  withCreatedRepo env (createRepository (CreateRepositoryOption "issue integration tests" name False)) $ \r -> do
+    issue <- setupIssue env r
+    action (env, r, issue)
+
+setupIssue :: AppEnv -> Repository -> IO Issue
+setupIssue env r = do
   let opt =
-        CreateIssueOption owner repo
+        CreateIssueOption r.repoOwner.userLogin r.repoName
           $ CreateIssueApiOption
             "Integration test issue"
             (Just "created by hspec")

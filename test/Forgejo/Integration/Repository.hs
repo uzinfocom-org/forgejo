@@ -1,5 +1,6 @@
 module Forgejo.Integration.Repository (spec) where
 
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Forgejo (AppEnv, ForgejoError (..), createRepository, runForgejo)
 import Forgejo.Integration.Helpers (uniqueName, withCreatedRepo)
 import Forgejo.Types.CreateRepositoryOption (CreateRepositoryOption (..))
@@ -10,7 +11,8 @@ spec :: SpecWith AppEnv
 spec = do
   it "creates a repository with the given name" $ \env -> do
     name <- uniqueName "hspec-repo"
-    withCreatedRepo env (createRepository (CreateRepositoryOption "integration test" name False)) $ \r ->
+    withCreatedRepo env (createRepository (CreateRepositoryOption "integration test" name False)) $ \r -> do
+      liftIO $ print $ repoName r
       repoName r `shouldBe` name
 
   it "returns ErrConflict when the repository already exists" $ \env -> do

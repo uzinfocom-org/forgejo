@@ -65,7 +65,7 @@ fromClientError = \case
       (decodeUtf8Lenient $ BSL.toStrict (responseBody resp))
   DecodeFailure msg _ -> ErrDecodeFailure msg
   ConnectionError ex -> ErrNetwork (pack $ show ex)
-  _ -> ErrDecodeFailure (pack "unexpected servant-client error")
+  e -> ErrDecodeFailure (pack $ "unexpected servant-client error: " <> show e)
 
 toServantError :: ForgejoError -> ServerError
 toServantError = \case

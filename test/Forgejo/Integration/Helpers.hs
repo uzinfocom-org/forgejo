@@ -18,8 +18,7 @@ uniqueName prefix = do
 even if the action throws. Fails the test immediately if creation fails.
 -}
 withCreatedRepo :: AppEnv -> AppM Repository -> (Repository -> IO a) -> IO a
-withCreatedRepo env create action =
+withCreatedRepo env create =
   bracket
     (runForgejo env create >>= either (fail . show) pure)
     (\r -> void $ runForgejo env (deleteRepository r.repoOwner.userLogin r.repoName))
-    action

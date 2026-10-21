@@ -27,7 +27,8 @@ instance FromJSON RepoDeleted where
 data RepoRoutes route = RepoRoutes
   { createRepositoryApi
       :: route
-        :- "repos"
+        :- "user"
+          :> "repos"
           :> ReqBody '[JSON] CreateRepositoryOption
           :> UVerb
                'POST
