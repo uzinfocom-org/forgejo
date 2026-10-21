@@ -18,7 +18,10 @@ mkDerivation {
     servant-server sop-core stm text time transformers uuid vector wai
     wai-extra warp
   ];
-  testHaskellDepends = [ base hspec hspec-wai ];
+  testHaskellDepends = [
+    aeson base hspec hspec-wai http-api-data http-client-tls mtl
+    servant servant-client servant-server text time
+  ];
   homepage = "https://github.com/uzinfocom-org/forgejo";
   license = lib.licenses.bsd3;
 }

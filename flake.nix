@@ -54,6 +54,14 @@
 
           forgejo = hp.forgejo;
 
+          # Same build, plus the test-suite binary so integration tests can run
+          # outside the sandbox (they need network and FORGEJO_* credentials).
+          forgejo-tests = hl.overrideCabal forgejo (old: {
+            postInstall = (old.postInstall or "") + ''
+              install -Dm755 dist/build/forgejo-test/forgejo-test $out/bin/forgejo-test
+            '';
+          });
+
           # Fails when nix/forgejo.nix is out of date with forgejo.cabal.
           cabal2nix-fresh = pkgs.runCommand "forgejo-cabal2nix-fresh" {
             nativeBuildInputs = [ pkgs.cabal2nix ];
@@ -94,6 +102,11 @@
             inherit cabal2nix-fresh;
           };
 
+          apps.e2etest = {
+            type = "app";
+            program = "${forgejo-tests}/bin/forgejo-test";
+          };
+
           apps.cabal2nix = {
             type = "app";
             program = "${pkgs.writeShellScript "update-cabal2nix" ''
@@ -118,6 +131,7 @@
                 libpq.dev
                 just
                 jq
+                yq-go
                 nixd
                 statix
                 deadnix
