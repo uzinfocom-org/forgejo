@@ -19,9 +19,9 @@ mkTestEnv url token = do
 
 spec :: Spec
 spec = do
-  mUrl <- runIO $ lookupEnv "FORGEJO_URL"
-  mToken <- runIO $ lookupEnv "FORGEJO_TOKEN"
-  mOrg <- runIO $ mfilter (not . null) <$> lookupEnv "FORGEJO_ORG"
+  mUrl <- runIO $ lookupEnv "FG_URL"
+  mToken <- runIO $ lookupEnv "FG_TOKEN"
+  mOrg <- runIO $ mfilter (not . null) <$> lookupEnv "FG_ORG"
 
   case (mUrl, mToken) of
     (Just url, Just token) ->
@@ -30,4 +30,4 @@ spec = do
         describe "Issue" Issue.spec
         describe "Organization" (Organization.spec (T.pack <$> mOrg))
     _ ->
-      it "integration tests (set FORGEJO_URL and FORGEJO_TOKEN to enable)" pending
+      it "integration tests (set FG_URL and FG_TOKEN to enable)" pending

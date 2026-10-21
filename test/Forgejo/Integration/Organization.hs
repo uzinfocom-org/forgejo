@@ -8,7 +8,7 @@ import Forgejo.Types.Repository (Repository (..))
 import Test.Hspec
 
 spec :: Maybe Text -> SpecWith AppEnv
-spec Nothing = it "org tests (set FORGEJO_ORG to enable)" (const pending)
+spec Nothing = it "org tests (set FG_ORG to enable)" (const pending)
 spec (Just org) = do
   describe "getOrgMember" $ do
     it "returns a list of members for an existing organisation" $ \env -> do

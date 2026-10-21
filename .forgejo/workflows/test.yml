@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v7
 
       # Builds the package and runs unit tests
-      # skipped here FORGEJO_* variables are not set.
+      # skipped here FG_* variables are not set.
       - name: Check up flake configuration
         run: nix flake check --show-trace
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          FORGEJO_URL: ${{ secrets.FG_URL }}
-          FORGEJO_TOKEN: ${{ secrets.FG_TOKEN }}
-          FORGEJO_ORG: ${{ secrets.FG_ORG }}
+          FG_URL: ${{ secrets.FG_URL }}
+          FG_TOKEN: ${{ secrets.FG_TOKEN }}
+          FG_ORG: ${{ secrets.FG_ORG }}
         run: nix run .#e2etest

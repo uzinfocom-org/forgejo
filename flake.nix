@@ -55,7 +55,7 @@
           forgejo = hp.forgejo;
 
           # Same build, plus the test-suite binary so integration tests can run
-          # outside the sandbox (they need network and FORGEJO_* credentials).
+          # outside the sandbox (they need network and FG_* credentials).
           forgejo-tests = hl.overrideCabal forgejo (old: {
             postInstall = (old.postInstall or "") + ''
               install -Dm755 dist/build/forgejo-test/forgejo-test $out/bin/forgejo-test
