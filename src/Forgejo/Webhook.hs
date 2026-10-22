@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE OrPatterns #-}
 
 -- | Receiving of webhooks which are sent by Forgejo.
@@ -12,17 +11,10 @@ module Forgejo.Webhook
   ) where
 
 import Control.Monad.Error.Class (MonadError)
-import Crypto.Hash (Digest, SHA256 (..), digestFromByteString)
-import Crypto.MAC.HMAC (HMAC (..), hmac)
-import Control.Monad (unless)
-import Data.Aeson (Value, parseJSON, eitherDecode)
+import Data.Aeson (Value, parseJSON)
 import Data.Aeson.Types (parseEither)
-import Data.ByteArray.Encoding qualified as BAE
-import Data.ByteString qualified as BS
-import Data.ByteString.Lazy qualified as BSL
 import Data.ByteString.Lazy.Char8 qualified as BSLC
 import Data.Text (Text)
-import Data.Text.Encoding (encodeUtf8)
 import Forgejo.Types.ActionRun (ActionRunPayload)
 import Forgejo.Types.Event (ForgejoEvent (..))
 import Forgejo.Types.EventType (ForgejoEventType)
@@ -30,19 +22,7 @@ import Forgejo.Types.IssueComment (IssueCommentPayload)
 import Forgejo.Types.PullRequest (PullRequestPayload)
 import Forgejo.Types.Push (PushPayload)
 import Forgejo.Types.Release (ReleasePayload)
-import Network.HTTP.Media ((//))
 import Servant
-
--- | Custom content type used to capture both the raw lazy byte string and the decoded JSON value.
-data RawAndJSON
-
-instance Accept RawAndJSON where
-  contentType _ = "application" // "json"
-
-instance MimeUnrender RawAndJSON (BSL.ByteString, Value) where
-  mimeUnrender _ rawBs = do
-    val <- eitherDecode rawBs
-    Right (rawBs, val)
 
 -- | Name of the event, for example @pull_request@. It is lenient, so an unknown name doesn't fail the request.
 type FGEvent = Header' '[Optional, Lenient] "x-forgejo-event" ForgejoEvent
@@ -52,9 +32,6 @@ type FGEventTy = Header' '[Optional, Lenient] "x-forgejo-event-type" ForgejoEven
 
 -- | Unique id of a delivery. It is optional on purpose, a sender which is not Forgejo may not send it. A duplicated header is rejected.
 type FGDelivery = Header' '[Optional, Strict] "x-forgejo-delivery" Text
-
--- | Header containing the HMAC-SHA256 signature sent by Forgejo (@X-Forgejo-Signature@).
-type FGSignature = Header' '[Optional, Strict] "x-forgejo-signature" Text
 
 -- | Payload of a delivery, parsed according to its event.
 data WebhookPayload
@@ -97,77 +74,48 @@ parseWebhookPayload Release v = Just . WPRelease <$> parseEither parseJSON v
 parseWebhookPayload _ _ = Right Nothing
 
 -- | Route of the webhook receiver. It answers nothing, Forgejo only looks at the status code.
-type WebhookAPI =
-  FGEvent
-  :> FGEventTy
-  :> FGDelivery
-  :> FGSignature
-  :> ReqBody '[RawAndJSON] (BSL.ByteString, Value)
-  :> Post '[JSON] ()
-
-{- | Verifies a Forgejo HMAC-SHA256 signature against the request body.
-   Returns 'True' if the signature matches the expected hash computed with the secret key.
--}
-verifySignature :: BS.ByteString -> BS.ByteString -> BS.ByteString -> Bool
-verifySignature key msg sigHex =
-  case BAE.convertFromBase BAE.Base16 sigHex :: Either String BS.ByteString of
-    Left _ -> False
-    Right sig -> case digestFromByteString sig :: Maybe (Digest SHA256) of
-      Nothing -> False
-      Just d -> hmac key msg == HMAC d
+--   @body@ is how the request body is read, it has to give a 'Value'.
+type WebhookAPI body =
+  FGEvent :> FGEventTy :> FGDelivery :> body :> Post '[JSON] ()
 
 {- | Handle a delivery and give the callback its 'Delivery' together with the parsed payload.
 
   * malformed body: answers 400
   * event which we don't handle: answers 200, the callback is not called
   * event header is missing or unknown: answers 200, the callback is not called
-  * signature header is missing or invalid: answers 401
+
+  FIXME: the body is already parsed when we get it, so the signature of a delivery
+  (@X-Forgejo-Signature@) can't be verified here. Need the raw body for it.
 -}
 webhookHandlerWith
   :: (MonadError ServerError m)
   => (Delivery -> WebhookPayload -> m ())
-  -> Maybe BS.ByteString
   -> Maybe (Either Text ForgejoEvent)
   -> Maybe (Either Text ForgejoEventType)
   -> Maybe Text
-  -> Maybe Text
-  -> (BSL.ByteString, Value)
+  -> Value
   -> m ()
-webhookHandlerWith cb mSecret mEvent mEventType mDeliveryId mSig (rawBody, body) = do
-  case (mSecret, mSig) of
-    (Just secret, Just sig) ->
-      unless (verifySignature secret (BS.toStrict rawBody) (encodeUtf8 sig)) $
-        throwError invalidSig
-    _ -> pure ()
-
-  case mEvent of
-    Just (Right event) -> do
-      let delivery = Delivery
-            { deliveryId        = mDeliveryId
-            , deliveryEvent     = event
-            , deliveryEventType = mEventType >>= either (const Nothing) Just
-            }
-
-      case parseWebhookPayload event body of
-        Left err -> throwError err400 { errBody = BSLC.pack err }
-        Right (Just p) -> cb delivery p
-        Right Nothing  -> pure ()
-
-    _ -> pure ()
-
--- | Error returned when the signature is missing or fails verification.
-invalidSig :: ServerError
-invalidSig = err401{errBody = BSLC.pack "Invalid X-Forgejo-Signature"}
+webhookHandlerWith cb (Just (Right event)) mEventType mDeliveryId body =
+  case parseWebhookPayload event body of
+    Left err -> throwError err400{errBody = BSLC.pack err}
+    Right Nothing -> pure ()
+    Right (Just payload) -> cb delivery payload
+ where
+  delivery =
+    Delivery
+      { deliveryId = mDeliveryId
+      , deliveryEvent = event
+      , deliveryEventType = mEventType >>= either (const Nothing) Just
+      }
+webhookHandlerWith _ _ _ _ _ = pure ()
 
 -- | Same as 'webhookHandlerWith' for callbacks which don't need the 'Delivery'.
 webhookHandler
   :: (MonadError ServerError m)
   => (WebhookPayload -> m ())
-  -> Maybe BS.ByteString
   -> Maybe (Either Text ForgejoEvent)
   -> Maybe (Either Text ForgejoEventType)
   -> Maybe Text
-  -> Maybe Text
-  -> (BSL.ByteString, Value)
+  -> Value
   -> m ()
-webhookHandler cb secret = webhookHandlerWith (const cb) secret
+webhookHandler cb = webhookHandlerWith (const cb)
