@@ -1,0 +1,6 @@
+# gain fields later, so keep them as `data`.
+- ignore: { name: "Use newtype instead of data" }
+
+# hlint doesn't read default-extensions from forgejo.cabal without this it
+# parses `r.field` as composition and suggests bogus eta reductions.
+- arguments: [-XOverloadedRecordDot]

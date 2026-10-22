@@ -1,0 +1,42 @@
+name: Test CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      integration:
+        description: "Run integration tests"
+        type: boolean
+        default: false
+  push:
+  pull_request:
+
+jobs:
+  test-flake:
+    name: "Test flake"
+    runs-on: native
+
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v7
+
+      # Builds the package and runs unit tests
+      # skipped here FG_* variables are not set.
+      - name: Check up flake configuration
+        run: nix flake check --show-trace
+
+  integration:
+    name: "Integration tests"
+    runs-on: native
+    # Only on a manual run with the "integration" box ticked.
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.integration == 'true'
+
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v7
+
+      - name: Run integration tests
+        env:
+          FG_URL: ${{ secrets.FG_URL }}
+          FG_TOKEN: ${{ secrets.FG_TOKEN }}
+          FG_ORG: ${{ secrets.FG_ORG }}
+        run: nix run .#e2etest

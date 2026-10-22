@@ -15,6 +15,7 @@ module Forgejo
   , createIssue
   , createPullRequest
   , createRepository
+  , deleteRepository
   , createOrgRepository
 
     -- * Webhook
@@ -55,7 +56,7 @@ import Forgejo.Methods.Issue (createIssue)
 import Forgejo.Methods.OrgMembers (getOrgMember)
 import Forgejo.Methods.Organization (createOrgRepository)
 import Forgejo.Methods.PullRequest (addReviewer, createPullRequest)
-import Forgejo.Methods.Repository (createRepository)
+import Forgejo.Methods.Repository (createRepository, deleteRepository)
 import Forgejo.Types.ActionRun
 import Forgejo.Types.Comment
 import Forgejo.Types.Commit
