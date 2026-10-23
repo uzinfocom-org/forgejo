@@ -87,7 +87,7 @@ getIssue owner repo index = do
 
   * 'ErrNotFound': owner or repository does not exist
   * 'ErrForbidden': token lacks write access to issues
-  * 'ErrPrecondition': the condition defined by the If-Unmodified-Since or If-Match headers is not fulfilled
+  * 'ErrPreconditionFailed': the condition defined by the If-Unmodified-Since or If-Match headers is not fulfilled
 -}
 editIssue :: Text -> Text -> Int64 -> EditIssueOption -> AppM Issue
 editIssue owner repo index body = do

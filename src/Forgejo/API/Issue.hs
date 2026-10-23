@@ -13,7 +13,7 @@ import Forgejo.Types.APIInternalServerError (APIInternalServerError)
 import Forgejo.Types.APINotFound (APINotFound)
 import Forgejo.Types.APIRepoArchivedError (APIRepoArchivedError)
 import Forgejo.Types.APIValidationError (APIValidationError)
-import Forgejo.Types.APIPreconditionError (APIPreconditionError)
+import Forgejo.Types.APIPreconditionFailed (APIPreconditionFailed)
 import Forgejo.Types.Comment (Comment (..))
 import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.EditIssueOption
@@ -174,7 +174,7 @@ data IssueRoutes route = IssueRoutes
                   WithStatus 403 APIForbiddenError,
                   WithStatus 404 APINotFound,
                   -- In forgejo this error is used as APIError, but this code is considered Precondition error
-                  WithStatus 412 APIPreconditionError
+                  WithStatus 412 APIPreconditionFailed
               ]
     -- ^ PATCH /repos/{owner}/{repo}/issues/{index}
 
