@@ -10,6 +10,9 @@ module Forgejo.Methods.Issue
   , getComment
   , deleteComment
   , editComment
+  , listIssueLabels
+  , createIssueLabels
+  , deleteIssueLabels
   ) where
 
 import Forgejo.App (AppM, forgejo)
@@ -25,6 +28,9 @@ import Forgejo.Types.Comment (Comment)
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.EditIssueCommentOption
 import Forgejo.Types.ListCommentsOption
+import Forgejo.Types.Label
+import Forgejo.Types.IssueLabelsOption
+import Forgejo.Types.DeleteLabelsOption
 import Data.Text (Text)
 import Data.Int (Int64)
 import Servant (NoContent)
@@ -118,7 +124,7 @@ deleteIssue owner repo index = do
 createIssueComment :: CreateIssueCommentOption -> AppM Comment
 createIssueComment CreateIssueCommentOption{..} = do
   fg <- forgejo
-  createIssueCommentApi (issues fg) ciscoOwner ciscoRepo ciscoIndex ciscoApiJson >>= liftResult
+  createIssueCommentApi (issues fg) cicoOwner cicoRepo cicoIndex cicoApiJson >>= liftResult
 
 {- | List comments for issue
 
@@ -172,3 +178,52 @@ editComment :: Text -> Text -> Int64 -> EditIssueCommentOption -> AppM Comment
 editComment owner repo id body = do
     fg <- forgejo
     editCommentApi (issues fg) owner repo id body >>= liftResult
+
+
+{- | list an issue's labels.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+-}
+listIssueLabels :: Text -> Text -> Int64 -> AppM [Label]
+listIssueLabels owner repo index = do
+    fg <- forgejo
+    listIssueLabelsApi (issues fg) owner repo index >>= liftResult
+
+{- | Replace an issue's labels.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+-}
+editIssueLabels :: Text -> Text -> Int64 -> IssueLabelsOption -> AppM [Label]
+editIssueLabels owner repo index body = do
+    fg <- forgejo
+    editIssueLabelsApi (issues fg) owner repo index body >>= liftResult
+
+{- | Create issue's labels.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+-}
+createIssueLabels :: Text -> Text -> Int64 -> IssueLabelsOption -> AppM [Label]
+createIssueLabels owner repo index body = do
+    fg <- forgejo
+    createIssueLabelsApi (issues fg) owner repo index body >>= liftResult
+
+
+{- | Delete issue's labels.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+-}
+deleteIssueLabels :: Text -> Text -> Int64 -> DeleteLabelsOption -> AppM NoContent
+deleteIssueLabels owner repo index body = do
+    fg <- forgejo
+    deleteIssueLabelsApi (issues fg) owner repo index body >>= liftResult

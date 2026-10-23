@@ -6,6 +6,7 @@ module Forgejo.Types.CreateIssueCommentOption
 import Data.Aeson (ToJSON (..), genericToJSON)
 import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
 import Data.Text (Text)
+import Data.Int (Int64)
 import GHC.Generics (Generic)
 
 cicoOptions :: Options
@@ -24,8 +25,8 @@ instance ToJSON CreateIssueCommentApiOption where
 mirroring CreateIssueOption's shape.
 -}
 data CreateIssueCommentOption = CreateIssueCommentOption
-  { ciscoOwner :: Text
-  , ciscoRepo :: Text
-  , ciscoIndex :: Int
-  , ciscoApiJson :: CreateIssueCommentApiOption
+  { cicoOwner :: Text
+  , cicoRepo :: Text
+  , cicoIndex :: Int64
+  , cicoApiJson :: CreateIssueCommentApiOption
   }

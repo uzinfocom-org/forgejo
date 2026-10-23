@@ -20,6 +20,9 @@ import Forgejo.Types.EditIssueOption
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.EditIssueCommentOption
 import Forgejo.Types.Issue (Issue)
+import Forgejo.Types.Label
+import Forgejo.Types.IssueLabelsOption
+import Forgejo.Types.DeleteLabelsOption
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
 import Servant (Capture, JSON, QueryParam, ReqBody, NoContent, DeleteNoContent, UVerb, Verb, WithStatus,ToHttpApiData (..), type (:-), type (:>), type (:<|>))
@@ -193,7 +196,7 @@ data IssueRoutes route = IssueRoutes
                   WithStatus 403 APIForbiddenError,
                   WithStatus 404 APINotFound
               ]
-    -- ^ GET /repos/{owner}/{repo}/issues/{index}
+    -- ^ DELETE /repos/{owner}/{repo}/issues/{index}
 
     , listCommentsApi
     :: route
@@ -267,7 +270,7 @@ data IssueRoutes route = IssueRoutes
               :> Capture "id" Int64
               :> ReqBody '[JSON] EditIssueCommentOption
               :> (UVerb
-                  'DELETE
+                  'PATCH
                   '[JSON]
                   '[
                       WithStatus 200 Comment,
@@ -278,7 +281,7 @@ data IssueRoutes route = IssueRoutes
                       WithStatus 500 APIInternalServerError
                   ]
               )
-    -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
+    -- ^ PATCH /repos/{owner}/{repo}/issues/comments/{id}
 
     , createIssueCommentApi
       :: route
@@ -286,7 +289,7 @@ data IssueRoutes route = IssueRoutes
           :> Capture "owner" Text
           :> Capture "repo" Text
           :> "issues"
-          :> Capture "index" Int
+          :> Capture "index" Int64
           :> "comments"
           :> ReqBody '[JSON] CreateIssueCommentApiOption
           :> UVerb
@@ -301,5 +304,78 @@ data IssueRoutes route = IssueRoutes
              ]
     -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
 
+    , listIssueLabelsApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> "labels"
+          :> UVerb
+            'GET
+            '[JSON]
+            '[
+                WithStatus 200 [Label]
+              , WithStatus 404 APINotFound
+             ]
+    -- ^ GET /repos/{owner}/{repo}/issues/{index}/labels
+
+    , editIssueLabelsApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> "labels"
+          :> ReqBody '[JSON] IssueLabelsOption
+          :> UVerb
+            'PUT
+            '[JSON]
+            '[
+                WithStatus 200 [Label]
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+             ]
+    -- ^ PUT /repos/{owner}/{repo}/issues/{index}/labels
+
+    , createIssueLabelsApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> "labels"
+          :> ReqBody '[JSON] IssueLabelsOption
+          :> UVerb
+            'POST
+            '[JSON]
+            '[
+                WithStatus 200 [Label]
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+             ]
+    -- ^ POST /repos/{owner}/{repo}/issues/{index}/labels
+
+    , deleteIssueLabelsApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> "labels"
+          :> ReqBody '[JSON] DeleteLabelsOption
+          :> UVerb
+            'DELETE
+            '[JSON]
+            '[
+                WithStatus 204 NoContent
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+             ]
+    -- ^ DELETE /repos/{owner}/{repo}/issues/{index}/labels
   }
   deriving stock (Generic)
