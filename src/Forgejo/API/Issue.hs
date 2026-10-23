@@ -16,10 +16,11 @@ import Forgejo.Types.APIValidationError (APIValidationError)
 import Forgejo.Types.Comment (Comment (..))
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.CreateIssueOption
+import Forgejo.Types.EditIssueCommentOption
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
 import Network.HTTP.Types (StdMethod (..))
-import Servant (Capture, JSON, QueryParam, ReqBody, NoContent, UVerb, WithStatus,ToHttpApiData (..), type (:-), type (:>))
+import Servant (Capture, JSON, QueryParam, ReqBody, NoContent, DeleteNoContent, UVerb, Verb, WithStatus,ToHttpApiData (..), type (:-), type (:>), type (:<|>))
 import Data.Time (UTCTime)
 import Data.Int (Int64)
 import Data.Aeson (ToJSON, FromJSON)
@@ -189,11 +190,52 @@ data IssueRoutes route = IssueRoutes
               '[JSON]
               '[
                   WithStatus 200 Comment,
-                  -- WithStatus 204 NoContent,
+                  -- TODO: need to make 204 status code work with `WithStatus` without writing instance of APIForgejoError for it
+                  WithStatus 204 NoContent,
                   WithStatus 403 APIForbiddenError,
                   WithStatus 404 APINotFound,
                   WithStatus 500 APIInternalServerError
               ]
       -- ^ GET /repos/{owner}/{repo}/issues/comments/{id}
+      , deleteIssueCommentApi
+        :: route
+          :- "repos"
+            :> Capture "owner" Text
+            :> Capture "repo" Text
+            :> "issues"
+            :> "comments"
+            :> Capture "id" Int64
+            :> (UVerb
+                'DELETE
+                '[JSON]
+                '[
+                    WithStatus 204 NoContent,
+                    WithStatus 403 APIForbiddenError,
+                    WithStatus 500 APIInternalServerError
+                ]
+            )
+        -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
+        , editIssueCommentApi
+          :: route
+            :- "repos"
+              :> Capture "owner" Text
+              :> Capture "repo" Text
+              :> "issues"
+              :> "comments"
+              :> Capture "id" Int64
+              :> ReqBody '[JSON] EditIssueCommentOption
+              :> (UVerb
+                  'DELETE
+                  '[JSON]
+                  '[
+                      WithStatus 200 Comment,
+                      WithStatus 204 NoContent,
+                      WithStatus 403 APIForbiddenError,
+                      WithStatus 404 APINotFound,
+                      WithStatus 423 APIRepoArchivedError,
+                      WithStatus 500 APIInternalServerError
+                  ]
+              )
+          -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
   }
   deriving stock (Generic)

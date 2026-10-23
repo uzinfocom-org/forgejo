@@ -17,11 +17,12 @@ import Forgejo.Types.APIUnauthorizedError (APIUnauthorizedError (..))
 import Forgejo.Types.APIValidationError (APIValidationError (..))
 import GHC.Generics (Generic)
 import Network.HTTP.Types (status400)
-import Servant (Union, WithStatus (..))
+import Servant (Union, NoContent, WithStatus (..))
 import Servant.API.Status (KnownStatus (statusVal))
 
 data ForgejoError
-  = ErrBadRequest Text Text
+  = EmptyResponse NoContent
+  | ErrBadRequest Text Text
   | ErrUnauthorized Text Text
   | ErrForbidden Text Text
   | ErrNotFound Text Text [Text]
@@ -37,6 +38,9 @@ data ForgejoError
 
 class AsForgejoError a where
   asForgejoError :: a -> ForgejoError
+
+instance AsForgejoError (WithStatus 204 NoContent) where
+    asForgejoError (WithStatus e) = EmptyResponse e
 
 instance AsForgejoError (WithStatus 400 APIError) where
   asForgejoError (WithStatus e) = ErrBadRequest e.message e.url

@@ -5,11 +5,13 @@ module Forgejo.Methods.Issue
   , searchIssues
   , createIssueComment
   , listIssueComments
-  , getIssueCommentApi
+  , getIssueComment
+  , deleteIssueComment
+  , editIssueComment
   ) where
 
 import Forgejo.API (ForgejoRoutes (issues))
-import Forgejo.API.Issue (IssueSortBy, IssueState, IssueType, IssueRoutes (..))
+import Forgejo.API.Issue
 import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
 import Forgejo.Types.Comment (Comment)
@@ -18,11 +20,11 @@ import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.ListIssuesOption
 import Forgejo.Types.SearchIssuesOption
 import Forgejo.Types.ListIssueCommentsOption
+import Forgejo.Types.EditIssueCommentOption
 import Forgejo.Types.Issue (Issue)
 import Data.Text (Text)
-import Data.Time (UTCTime)
 import Data.Int (Int64)
-
+import Servant (NoContent)
 --
 
 {- | Create an issue in a repository.
@@ -91,7 +93,7 @@ listIssueComments ListIssueCommentsOption{..} = do
     fg <- forgejo
     listIssueCommentsApi (issues fg) licoOwner licoRepo licoSince licoBefore licoPage licoLimit >>= liftResult
 
-{- | List comments for issue
+{- | Get comment for issue
 
   Possible errors:
 
@@ -103,3 +105,30 @@ getIssueComment :: Text -> Text -> Int64 -> AppM Comment
 getIssueComment owner repo id = do
     fg <- forgejo
     getIssueCommentApi (issues fg) owner repo id >>= liftResult
+
+{- | Delete comment for issue
+
+  Possible errors:
+
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrServer': internal server error occured
+-}
+deleteIssueComment :: Text -> Text -> Int64 -> AppM NoContent
+deleteIssueComment owner repo id = do
+    fg <- forgejo
+    deleteIssueCommentApi (issues fg) owner repo id >>= liftResult
+
+{- | Delete comment for issue
+
+  Possible errors:
+
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrServer': internal server error occured
+  * 'ErrRepoArchived': repository is archived
+-}
+editIssueComment :: Text -> Text -> Int64 -> EditIssueCommentOption -> AppM Comment
+editIssueComment owner repo id body = do
+    fg <- forgejo
+    editIssueCommentApi (issues fg) owner repo id body >>= liftResult
