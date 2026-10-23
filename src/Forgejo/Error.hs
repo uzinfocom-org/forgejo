@@ -15,6 +15,7 @@ import Forgejo.Types.APINotFound (APINotFound (..))
 import Forgejo.Types.APIRepoArchivedError (APIRepoArchivedError (..))
 import Forgejo.Types.APIUnauthorizedError (APIUnauthorizedError (..))
 import Forgejo.Types.APIValidationError (APIValidationError (..))
+import Forgejo.Types.APIPreconditionError (APIPreconditionError (..))
 import GHC.Generics (Generic)
 import Network.HTTP.Types (status400)
 import Servant (Union, NoContent, WithStatus (..))
@@ -34,6 +35,7 @@ data ForgejoError
   | ErrDecodeFailure Text
   | ErrNetwork Text
   | ErrUnexpected Int Text
+  | ErrPrecondition Text Text
   deriving stock (Eq, Generic, Show)
 
 class AsForgejoError a where
@@ -56,6 +58,9 @@ instance AsForgejoError (WithStatus 404 APINotFound) where
 
 instance AsForgejoError (WithStatus 409 APIError) where
   asForgejoError (WithStatus e) = ErrConflict e.message e.url
+
+instance AsForgejoError (WithStatus 412 APIPreconditionError) where
+    asForgejoError (WithStatus e) = ErrPrecondition e.message e.url
 
 instance AsForgejoError (WithStatus 422 APIValidationError) where
   asForgejoError (WithStatus e) = ErrValidation e.message e.url

@@ -13,9 +13,11 @@ import Forgejo.Types.APIInternalServerError (APIInternalServerError)
 import Forgejo.Types.APINotFound (APINotFound)
 import Forgejo.Types.APIRepoArchivedError (APIRepoArchivedError)
 import Forgejo.Types.APIValidationError (APIValidationError)
+import Forgejo.Types.APIPreconditionError (APIPreconditionError)
 import Forgejo.Types.Comment (Comment (..))
-import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.CreateIssueOption
+import Forgejo.Types.EditIssueOption
+import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.EditIssueCommentOption
 import Forgejo.Types.Issue (Issue)
 import GHC.Generics (Generic)
@@ -77,8 +79,123 @@ data IssueRoutes route = IssueRoutes
                 , WithStatus 422 APIValidationError
                 , WithStatus 423 APIRepoArchivedError
                 ]
-  -- ^ POST /repos/{owner}/{repo}/issues
-  , createIssueCommentApi
+     -- ^ POST /repos/{owner}/{repo}/issues
+
+    , listIssuesApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> QueryParam "state" IssueState
+          :> QueryParam "labels" Text
+          :> QueryParam "q" Text
+          :> QueryParam "type" IssueType
+          :> QueryParam "milestone" Text
+          :> QueryParam "since" UTCTime
+          :> QueryParam "before" UTCTime
+          :> QueryParam "created_by" Text
+          :> QueryParam "assigned_by" Text
+          :> QueryParam "mentioned_by" Text
+          :> QueryParam "page" Int
+          :> QueryParam "limit" Int
+          :> QueryParam "sort" IssueSortBy
+          :> UVerb
+            'GET
+            '[JSON]
+            '[
+                WithStatus 200 [Issue],
+                WithStatus 404 APINotFound,
+                WithStatus 422 APIValidationError
+            ]
+    -- ^ GET /repos/{owner}/{repo}/issues
+
+    , searchIssuesApi
+      :: route
+        :- "repos"
+        :> "search"
+          :> QueryParam "state" IssueState
+          :> QueryParam "labels" Text
+          :> QueryParam "milestones" Text
+          :> QueryParam "q" Text
+          :> QueryParam "priority_repo_id" Int64
+          :> QueryParam "type" IssueType
+          :> QueryParam "since" UTCTime
+          :> QueryParam "before" UTCTime
+          :> QueryParam "assigned" Bool
+          :> QueryParam "created" Bool
+          :> QueryParam "mentioned" Bool
+          :> QueryParam "review_requested" Bool
+          :> QueryParam "reviewed" Bool
+          :> QueryParam "owner" Text
+          :> QueryParam "team" Text
+          :> QueryParam "page" Int
+          :> QueryParam "limit" Int
+          :> QueryParam "sort" IssueSortBy
+          :> UVerb
+            'GET
+            '[JSON]
+            '[
+                WithStatus 200 [Issue],
+                WithStatus 400 APIError,
+                WithStatus 422 APIValidationError
+            ]
+    -- ^ GET /repos/issues/search
+
+    , getIssueApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> UVerb
+              'GET
+              '[JSON]
+              '[
+                  WithStatus 200 Issue,
+                  WithStatus 404 APINotFound
+              ]
+    -- ^ GET /repos/{owner}/{repo}/issues/{index}
+
+    , editIssueApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> ReqBody '[JSON] EditIssueOption
+          :> UVerb
+              'PATCH
+              '[JSON]
+              '[
+                  WithStatus 201 Issue,
+                  WithStatus 403 APIForbiddenError,
+                  WithStatus 404 APINotFound,
+                  -- In forgejo this error is used as APIError, but this code is considered Precondition error
+                  WithStatus 412 APIPreconditionError
+              ]
+    -- ^ PATCH /repos/{owner}/{repo}/issues/{index}
+
+    , deleteIssueApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> UVerb
+              'DELETE
+              '[JSON]
+              '[
+                  WithStatus 204 NoContent,
+                  WithStatus 403 APIForbiddenError,
+                  WithStatus 404 APINotFound
+              ]
+    -- ^ GET /repos/{owner}/{repo}/issues/{index}
+
+    , createIssueCommentApi
       :: route
         :- "repos"
           :> Capture "owner" Text
@@ -88,75 +205,18 @@ data IssueRoutes route = IssueRoutes
           :> "comments"
           :> ReqBody '[JSON] CreateIssueCommentApiOption
           :> UVerb
-               'POST
-               '[JSON]
-               '[ WithStatus 201 Comment
-                , WithStatus 403 APIForbiddenError
-                , WithStatus 404 APINotFound
-                , WithStatus 423 APIRepoArchivedError
-                , WithStatus 500 APIInternalServerError
-                ]
-  -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
-  , listIssuesApi
-    :: route
-        :- "repos"
-            :> Capture "owner" Text
-            :> Capture "repo" Text
-            :> "issues"
-            :> QueryParam "state" IssueState
-            :> QueryParam "labels" Text
-            :> QueryParam "q" Text
-            :> QueryParam "type" IssueType
-            :> QueryParam "milestone" Text
-            :> QueryParam "since" UTCTime
-            :> QueryParam "before" UTCTime
-            :> QueryParam "created_by" Text
-            :> QueryParam "assigned_by" Text
-            :> QueryParam "mentioned_by" Text
-            :> QueryParam "page" Int
-            :> QueryParam "limit" Int
-            :> QueryParam "sort" IssueSortBy
-            :> UVerb
-                  'GET
-                  '[JSON]
-                  '[
-                      WithStatus 200 [Issue],
-                      WithStatus 404 APINotFound,
-                      WithStatus 422 APIValidationError
-                  ]
-    -- ^ GET /repos/{owner}/{repo}/issues
-  , searchIssuesApi
-    :: route
-      :- "repos"
-      :> "search"
-      :> QueryParam "state" IssueState
-      :> QueryParam "labels" Text
-      :> QueryParam "milestones" Text
-      :> QueryParam "q" Text
-      :> QueryParam "priority_repo_id" Int64
-      :> QueryParam "type" IssueType
-      :> QueryParam "since" UTCTime
-      :> QueryParam "before" UTCTime
-      :> QueryParam "assigned" Bool
-      :> QueryParam "created" Bool
-      :> QueryParam "mentioned" Bool
-      :> QueryParam "review_requested" Bool
-      :> QueryParam "reviewed" Bool
-      :> QueryParam "owner" Text
-      :> QueryParam "team" Text
-      :> QueryParam "page" Int
-      :> QueryParam "limit" Int
-      :> QueryParam "sort" IssueSortBy
-      :> UVerb
-            'GET
+            'POST
             '[JSON]
             '[
-                WithStatus 200 [Issue],
-                WithStatus 400 APIError,
-                WithStatus 422 APIValidationError
-            ]
-  -- ^ GET /repos/issues/search
-  , listIssueCommentsApi
+                WithStatus 201 Comment
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+              , WithStatus 423 APIRepoArchivedError
+              , WithStatus 500 APIInternalServerError
+             ]
+    -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
+
+    , listIssueCommentsApi
     :: route
       :- "repos"
         :> Capture "owner" Text
@@ -177,6 +237,7 @@ data IssueRoutes route = IssueRoutes
                 WithStatus 500 APIInternalServerError
             ]
     -- ^ GET /repos/{owner}/{repo}/issues/comments
+
     , getIssueCommentApi
       :: route
         :- "repos"
@@ -196,10 +257,11 @@ data IssueRoutes route = IssueRoutes
                   WithStatus 404 APINotFound,
                   WithStatus 500 APIInternalServerError
               ]
-      -- ^ GET /repos/{owner}/{repo}/issues/comments/{id}
-      , deleteIssueCommentApi
-        :: route
-          :- "repos"
+    -- ^ GET /repos/{owner}/{repo}/issues/comments/{id}
+
+    , deleteIssueCommentApi
+      :: route
+        :- "repos"
             :> Capture "owner" Text
             :> Capture "repo" Text
             :> "issues"
@@ -214,9 +276,10 @@ data IssueRoutes route = IssueRoutes
                     WithStatus 500 APIInternalServerError
                 ]
             )
-        -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
-        , editIssueCommentApi
-          :: route
+    -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
+
+    , editIssueCommentApi
+        :: route
             :- "repos"
               :> Capture "owner" Text
               :> Capture "repo" Text
@@ -236,6 +299,6 @@ data IssueRoutes route = IssueRoutes
                       WithStatus 500 APIInternalServerError
                   ]
               )
-          -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
+    -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
   }
   deriving stock (Generic)

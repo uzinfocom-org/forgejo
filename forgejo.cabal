@@ -54,6 +54,7 @@ library
     Forgejo.Types.APINotFound
     Forgejo.Types.APIRepoArchivedError
     Forgejo.Types.APIUnauthorizedError
+    Forgejo.Types.APIPreconditionError
     Forgejo.Types.APIValidationError
     Forgejo.Types.Attachment
     Forgejo.Types.BlockedUser

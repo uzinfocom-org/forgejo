@@ -3,6 +3,8 @@ module Forgejo.Methods.Issue
   ( createIssue
   , listIssues
   , searchIssues
+  , getIssue
+  , deleteIssue
   , createIssueComment
   , listIssueComments
   , getIssueComment
@@ -18,6 +20,7 @@ import Forgejo.Types.Comment (Comment)
 import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.ListIssuesOption
+import Forgejo.Types.EditIssueOption
 import Forgejo.Types.SearchIssuesOption
 import Forgejo.Types.ListIssueCommentsOption
 import Forgejo.Types.EditIssueCommentOption
@@ -66,6 +69,43 @@ searchIssues :: SearchIssuesOption -> AppM [Issue]
 searchIssues SearchIssuesOption{..} = do
     fg <- forgejo
     searchIssuesApi (issues fg) sioState sioLabels sioMilestones sioQ sioPriorityRepoId sioType sioSince sioBefore sioAssigned sioCreated sioMentioned sioReviewRequested sioReviewed sioOwner sioTeam sioPage sioLimit sioSort >>= liftResult
+
+{- | get an issue in a repository.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+-}
+getIssue :: Text -> Text -> Int64 -> AppM Issue
+getIssue owner repo index = do
+    fg <- forgejo
+    getIssueApi (issues fg) owner repo index >>= liftResult
+
+{- | edit an issue in a repository.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrPrecondition': the condition defined by the If-Unmodified-Since or If-Match headers is not fulfilled
+-}
+editIssue :: Text -> Text -> Int64 -> EditIssueOption -> AppM Issue
+editIssue owner repo index body = do
+    fg <- forgejo
+    editIssueApi (issues fg) owner repo index body >>= liftResult
+
+{- | delete an issue in a repository.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+-}
+deleteIssue :: Text -> Text -> Int64 -> AppM NoContent
+deleteIssue owner repo index = do
+    fg <- forgejo
+    deleteIssueApi (issues fg) owner repo index >>= liftResult
+
 {- | Create a comment for issues
 
   Possible errors:
