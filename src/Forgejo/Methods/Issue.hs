@@ -6,25 +6,25 @@ module Forgejo.Methods.Issue
   , getIssue
   , deleteIssue
   , createIssueComment
-  , listIssueComments
-  , getIssueComment
-  , deleteIssueComment
-  , editIssueComment
+  , listComments
+  , getComment
+  , deleteComment
+  , editComment
   ) where
 
+import Forgejo.App (AppM, forgejo)
 import Forgejo.API (ForgejoRoutes (issues))
 import Forgejo.API.Issue
-import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
-import Forgejo.Types.Comment (Comment)
-import Forgejo.Types.CreateIssueCommentOption
+import Forgejo.Types.Issue (Issue)
 import Forgejo.Types.CreateIssueOption
 import Forgejo.Types.ListIssuesOption
 import Forgejo.Types.EditIssueOption
 import Forgejo.Types.SearchIssuesOption
-import Forgejo.Types.ListIssueCommentsOption
+import Forgejo.Types.Comment (Comment)
+import Forgejo.Types.CreateIssueCommentOption
 import Forgejo.Types.EditIssueCommentOption
-import Forgejo.Types.Issue (Issue)
+import Forgejo.Types.ListCommentsOption
 import Data.Text (Text)
 import Data.Int (Int64)
 import Servant (NoContent)
@@ -128,10 +128,10 @@ createIssueComment CreateIssueCommentOption{..} = do
   * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
   * 'ErrServer': internal server error occured
 -}
-listIssueComments :: ListIssueCommentsOption -> AppM [Comment]
-listIssueComments ListIssueCommentsOption{..} = do
+listComments :: ListCommentsOption -> AppM [Comment]
+listComments ListCommentsOption{..} = do
     fg <- forgejo
-    listIssueCommentsApi (issues fg) licoOwner licoRepo licoSince licoBefore licoPage licoLimit >>= liftResult
+    listCommentsApi (issues fg) lcoOwner lcoRepo lcoSince lcoBefore lcoPage lcoLimit >>= liftResult
 
 {- | Get comment for issue
 
@@ -141,10 +141,10 @@ listIssueComments ListIssueCommentsOption{..} = do
   * 'ErrNotFound': owner or repository does not exist
   * 'ErrServer': internal server error occured
 -}
-getIssueComment :: Text -> Text -> Int64 -> AppM Comment
-getIssueComment owner repo id = do
+getComment :: Text -> Text -> Int64 -> AppM Comment
+getComment owner repo id = do
     fg <- forgejo
-    getIssueCommentApi (issues fg) owner repo id >>= liftResult
+    getCommentApi (issues fg) owner repo id >>= liftResult
 
 {- | Delete comment for issue
 
@@ -154,10 +154,10 @@ getIssueComment owner repo id = do
   * 'ErrNotFound': owner or repository does not exist
   * 'ErrServer': internal server error occured
 -}
-deleteIssueComment :: Text -> Text -> Int64 -> AppM NoContent
-deleteIssueComment owner repo id = do
+deleteComment :: Text -> Text -> Int64 -> AppM NoContent
+deleteComment owner repo id = do
     fg <- forgejo
-    deleteIssueCommentApi (issues fg) owner repo id >>= liftResult
+    deleteCommentApi (issues fg) owner repo id >>= liftResult
 
 {- | Delete comment for issue
 
@@ -168,7 +168,7 @@ deleteIssueComment owner repo id = do
   * 'ErrServer': internal server error occured
   * 'ErrRepoArchived': repository is archived
 -}
-editIssueComment :: Text -> Text -> Int64 -> EditIssueCommentOption -> AppM Comment
-editIssueComment owner repo id body = do
+editComment :: Text -> Text -> Int64 -> EditIssueCommentOption -> AppM Comment
+editComment owner repo id body = do
     fg <- forgejo
-    editIssueCommentApi (issues fg) owner repo id body >>= liftResult
+    editCommentApi (issues fg) owner repo id body >>= liftResult

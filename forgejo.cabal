@@ -119,7 +119,6 @@ library
     Forgejo.Types.EditDeadlineOption
     Forgejo.Types.EditGitHookOption
     Forgejo.Types.EditHookOption
-    Forgejo.Types.EditIssueCommentOption
     Forgejo.Types.EditIssueOption
     Forgejo.Types.EditLabelOption
     Forgejo.Types.EditMilestoneOption
@@ -174,7 +173,7 @@ library
     Forgejo.Types.LicensesTemplateListEntry
     Forgejo.Types.ListActionRunResponse
     Forgejo.Types.ListIssuesOption
-    Forgejo.Types.ListIssueCommentsOption
+    Forgejo.Types.ListCommentsOption
     Forgejo.Types.MarkdownOption
     Forgejo.Types.MarkupOption
     Forgejo.Types.MergePullRequestOption

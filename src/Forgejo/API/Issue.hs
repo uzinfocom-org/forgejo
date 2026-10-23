@@ -195,28 +195,7 @@ data IssueRoutes route = IssueRoutes
               ]
     -- ^ GET /repos/{owner}/{repo}/issues/{index}
 
-    , createIssueCommentApi
-      :: route
-        :- "repos"
-          :> Capture "owner" Text
-          :> Capture "repo" Text
-          :> "issues"
-          :> Capture "index" Int
-          :> "comments"
-          :> ReqBody '[JSON] CreateIssueCommentApiOption
-          :> UVerb
-            'POST
-            '[JSON]
-            '[
-                WithStatus 201 Comment
-              , WithStatus 403 APIForbiddenError
-              , WithStatus 404 APINotFound
-              , WithStatus 423 APIRepoArchivedError
-              , WithStatus 500 APIInternalServerError
-             ]
-    -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
-
-    , listIssueCommentsApi
+    , listCommentsApi
     :: route
       :- "repos"
         :> Capture "owner" Text
@@ -238,7 +217,7 @@ data IssueRoutes route = IssueRoutes
             ]
     -- ^ GET /repos/{owner}/{repo}/issues/comments
 
-    , getIssueCommentApi
+    , getCommentApi
       :: route
         :- "repos"
           :> Capture "owner" Text
@@ -259,7 +238,7 @@ data IssueRoutes route = IssueRoutes
               ]
     -- ^ GET /repos/{owner}/{repo}/issues/comments/{id}
 
-    , deleteIssueCommentApi
+    , deleteCommentApi
       :: route
         :- "repos"
             :> Capture "owner" Text
@@ -278,7 +257,7 @@ data IssueRoutes route = IssueRoutes
             )
     -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
 
-    , editIssueCommentApi
+    , editCommentApi
         :: route
             :- "repos"
               :> Capture "owner" Text
@@ -300,5 +279,27 @@ data IssueRoutes route = IssueRoutes
                   ]
               )
     -- ^ DELETE /repos/{owner}/{repo}/issues/comments/{id}
+
+    , createIssueCommentApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int
+          :> "comments"
+          :> ReqBody '[JSON] CreateIssueCommentApiOption
+          :> UVerb
+            'POST
+            '[JSON]
+            '[
+                WithStatus 201 Comment
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+              , WithStatus 423 APIRepoArchivedError
+              , WithStatus 500 APIInternalServerError
+             ]
+    -- ^ POST /repos/{owner}/{repo}/issues/{index}/comments
+
   }
   deriving stock (Generic)
