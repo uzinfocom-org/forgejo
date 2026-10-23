@@ -13,6 +13,7 @@ module Forgejo.Methods.Issue
   , listIssueLabels
   , createIssueLabels
   , deleteIssueLabels
+  , deleteIssueLabelsIdentifier
   ) where
 
 import Forgejo.App (AppM, forgejo)
@@ -227,3 +228,16 @@ deleteIssueLabels :: Text -> Text -> Int64 -> DeleteLabelsOption -> AppM NoConte
 deleteIssueLabels owner repo index body = do
     fg <- forgejo
     deleteIssueLabelsApi (issues fg) owner repo index body >>= liftResult
+
+{- | Delete label from an issue with identifier.
+
+  Possible errors:
+
+  * 'ErrNotFound': owner or repository does not exist
+  * 'ErrForbidden': token lacks write access to issues
+  * 'ErrValidation': title is empty, or label\/milestone IDs are invalid
+-}
+deleteIssueLabelsIdentifier :: Text -> Text -> Int64 -> Text -> DeleteLabelsOption -> AppM NoContent
+deleteIssueLabelsIdentifier owner repo index identifier body = do
+    fg <- forgejo
+    deleteIssueLabelsIdentifierApi (issues fg) owner repo index identifier body >>= liftResult

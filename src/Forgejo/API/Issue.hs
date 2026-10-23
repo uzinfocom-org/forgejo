@@ -377,5 +377,27 @@ data IssueRoutes route = IssueRoutes
               , WithStatus 404 APINotFound
              ]
     -- ^ DELETE /repos/{owner}/{repo}/issues/{index}/labels
+
+    , deleteIssueLabelsIdentifierApi
+      :: route
+        :- "repos"
+          :> Capture "owner" Text
+          :> Capture "repo" Text
+          :> "issues"
+          :> Capture "index" Int64
+          :> "labels"
+          :> Capture "identifier" Text
+          :> ReqBody '[JSON] DeleteLabelsOption
+          :> UVerb
+            'DELETE
+            '[JSON]
+            '[
+                WithStatus 204 NoContent
+              , WithStatus 403 APIForbiddenError
+              , WithStatus 404 APINotFound
+              , WithStatus 422 APIValidationError
+             ]
+    -- ^ DELETE /repos/{owner}/{repo}/issues/{index}/labels/{identifier}
+
   }
   deriving stock (Generic)
