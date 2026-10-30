@@ -74,8 +74,9 @@ parseWebhookPayload Release v = Just . WPRelease <$> parseEither parseJSON v
 parseWebhookPayload _ _ = Right Nothing
 
 -- | Route of the webhook receiver. It answers nothing, Forgejo only looks at the status code.
-type WebhookAPI =
-  FGEvent :> FGEventTy :> FGDelivery :> ReqBody '[JSON] Value :> Post '[JSON] ()
+--   @body@ is how the request body is read, it has to give a 'Value'.
+type WebhookAPI body =
+  FGEvent :> FGEventTy :> FGDelivery :> body :> Post '[JSON] ()
 
 {- | Handle a delivery and give the callback its 'Delivery' together with the parsed payload.
 
