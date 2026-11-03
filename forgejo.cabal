@@ -74,6 +74,7 @@ library
     Forgejo.Types.Common
     Forgejo.Types.Compare
     Forgejo.Types.ContentsResponse
+    Forgejo.Types.ContentTypes
     Forgejo.Types.CreateAccessTokenOption
     Forgejo.Types.CreateBranchProtectionOption
     Forgejo.Types.CreateBranchRepoOption
