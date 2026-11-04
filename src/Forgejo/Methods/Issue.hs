@@ -38,6 +38,7 @@ createIssue CreateIssueOption{..} = do
   * 'ErrNotFound': owner or repository does not exist
   * 'ErrRepoArchived': repository is archived
   * 'ErrServer': internal server error occured
+  * 'ErrValidation': comment body is empty
 -}
 createIssueComment :: CreateIssueCommentOption -> AppM Comment
 createIssueComment CreateIssueCommentOption{..} = do

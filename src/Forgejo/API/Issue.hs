@@ -51,6 +51,7 @@ data IssueRoutes route = IssueRoutes
                '[ WithStatus 201 Comment
                 , WithStatus 403 APIForbiddenError
                 , WithStatus 404 APINotFound
+                , WithStatus 422 APIValidationError
                 , WithStatus 423 APIRepoArchivedError
                 , WithStatus 500 APIInternalServerError
                 ]

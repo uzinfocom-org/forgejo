@@ -1,5 +1,6 @@
 module Forgejo.Integration.Issue (spec) where
 
+import Data.Text (Text)
 import Forgejo (AppEnv, ForgejoError (..), User (..), createIssue, createRepository, runForgejo)
 import Forgejo.Integration.Helpers (uniqueName, withCreatedRepo)
 import Forgejo.Methods.Issue (createIssueComment)
@@ -19,6 +20,9 @@ spec = do
       it "creates an issue with the expected title" $ \(_, _, issue) ->
         issue.issueTitle `shouldBe` "Integration test issue"
 
+      it "stores the given body" $ \(_, _, issue) ->
+        issue.issueBody `shouldBe` "created by hspec"
+
       it "creates a comment on the issue" $ \(env, r, issue) -> do
         let opt =
               CreateIssueCommentOption
@@ -31,9 +35,29 @@ spec = do
           Left err -> expectationFailure (show err)
           Right c -> c.commentBody `shouldBe` "integration test comment"
 
-  describe "errors"
-    $ it "returns ErrNotFound for a nonexistent owner/repo"
-    $ \env -> do
+  describe "createIssueComment"
+    $ aroundAllWith withIssue
+    $ do
+      it "creates a comment on the issue" $ \(env, r, issue) -> do
+        result <- runForgejo env (createIssueComment (commentOpt r issue.issueNumber "integration test comment"))
+        case result of
+          Left err -> expectationFailure (show err)
+          Right c -> c.commentBody `shouldBe` "integration test comment"
+
+      it "returns ErrValidation for an empty comment body" $ \(env, r, issue) -> do
+        result <- runForgejo env (createIssueComment (commentOpt r issue.issueNumber ""))
+        result `shouldSatisfy` \case
+          Left ErrValidation{} -> True
+          _ -> False
+
+      it "returns ErrNotFound for a nonexistent issue index" $ \(env, r, _) -> do
+        result <- runForgejo env (createIssueComment (commentOpt r 999999 "ghost"))
+        result `shouldSatisfy` \case
+          Left ErrNotFound{} -> True
+          _ -> False
+
+  describe "errors" $ do
+    it "returns ErrNotFound when creating an issue in a nonexistent owner/repo" $ \env -> do
       let opt =
             CreateIssueOption
               "owner-xyz-does-not-exist"
@@ -41,8 +65,28 @@ spec = do
               (CreateIssueApiOption "t" Nothing [] Nothing Nothing Nothing Nothing Nothing)
       result <- runForgejo env (createIssue opt)
       result `shouldSatisfy` \case
-        Left (ErrNotFound{}) -> True
+        Left ErrNotFound{} -> True
         _ -> False
+
+    it "returns ErrNotFound when commenting in a nonexistent owner/repo" $ \env -> do
+      let opt =
+            CreateIssueCommentOption
+              "owner-xyz-does-not-exist"
+              "repo-xyz"
+              1
+              (CreateIssueCommentApiOption "t")
+      result <- runForgejo env (createIssueComment opt)
+      result `shouldSatisfy` \case
+        Left ErrNotFound{} -> True
+        _ -> False
+ where
+  commentOpt :: Repository -> Int -> Text -> CreateIssueCommentOption
+  commentOpt r index body =
+    CreateIssueCommentOption
+      r.repoOwner.userLogin
+      r.repoName
+      index
+      $ CreateIssueCommentApiOption body
 
 -- ---------------------------------------------------------------------------
 
