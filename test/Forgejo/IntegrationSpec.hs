@@ -3,6 +3,7 @@ module Forgejo.IntegrationSpec (spec) where
 import Control.Monad (mfilter)
 import Data.Text qualified as T
 import Forgejo (AppEnv, mkAppEnv)
+import Forgejo.Integration.Commit qualified as Commit
 import Forgejo.Integration.Issue qualified as Issue
 import Forgejo.Integration.Organization qualified as Organization
 import Forgejo.Integration.Repository qualified as Repository
@@ -26,6 +27,7 @@ spec = do
   case (mUrl, mToken) of
     (Just url, Just token) ->
       beforeAll (mkTestEnv url token) $ do
+        describe "Commit" Commit.spec
         describe "Repository" Repository.spec
         describe "Issue" Issue.spec
         describe "Organization" (Organization.spec (T.pack <$> mOrg))
