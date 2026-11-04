@@ -22,7 +22,7 @@ data CreatePullRequestOption = CreatePullRequestOption
   deriving stock (Eq, Generic, Show)
 
 instance ToJSON CreatePullRequestOption where
-  toJSON = genericToJSON (camelToSnake){omitNothingFields = True}
+  toJSON = genericToJSON camelToSnake{omitNothingFields = True}
    where
     camelToSnake = defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 4}
 

@@ -1,0 +1,7 @@
+
+[forgejo]
+url = "https://your-forgejo.org"
+token = "your-api-token-here"
+
+[test]
+org = ""

@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Forgejo.Methods.PullRequest (PullReviewRequestOptions (..), addReviewer, createPullRequest, getPullRequestFiles, getPullRequestCommits)
 where
 
@@ -90,7 +88,6 @@ getPullRequestCommits owner repo index size = do
     listPullRequestCommitsApi (pulls fg) owner repo index (Just page) (Just limit) (Just False) (Just False)
       >>= liftResult
 
-
 -- FIXME: Pagination helpers below (defaultPageSize, pageSizeOf, fetchAllPages) are generic and
 -- have nothing to do with pull requests. Need to move them into separate module (e.g. `Forgejo.Pagination`)
 -- as soon as other methods (issues, repositories, releases) start to read lists.
@@ -112,7 +109,7 @@ pageSizeOf = fromMaybe defaultPageSize . mfilter (> 0)
 -}
 fetchAllPages :: (Monad m) => Int -> (Int -> Int -> m [a]) -> m [a]
 fetchAllPages size fetch = go 1
-  where
+ where
   go page = do
     items <- fetch page size
     if length items < size then
