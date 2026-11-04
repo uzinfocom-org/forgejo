@@ -1,7 +1,7 @@
 module Forgejo.Integration.Organization (spec) where
 
 import Data.Text (Text)
-import Forgejo (AppEnv, ForgejoError (..), createOrgRepository, getOrgMember, runForgejo)
+import Forgejo (AppEnv, ForgejoError (..), User (..), createOrgRepository, getOrgMember, runForgejo)
 import Forgejo.Integration.Helpers (uniqueName, withCreatedRepo)
 import Forgejo.Types.CreateRepositoryOption (CreateOrgRepositoryOption (..), CreateRepositoryOption (..))
 import Forgejo.Types.Repository (Repository (..))
@@ -20,13 +20,34 @@ spec (Just org) = do
     it "returns ErrNotFound for a nonexistent organisation" $ \env -> do
       result <- runForgejo env (getOrgMember "org-xyz-does-not-exist")
       result `shouldSatisfy` \case
-        Left (ErrNotFound{}) -> True
+        Left ErrNotFound{} -> True
         _ -> False
 
-  describe "createOrgRepository"
-    $ it "creates a repository in the organisation"
-    $ \env -> do
+  describe "createOrgRepository" $ do
+    it "creates a repository in the organisation" $ \env -> do
       name <- uniqueName "hspec-org-repo"
-      let opt = CreateOrgRepositoryOption org (CreateRepositoryOption "integration test" name False)
-      withCreatedRepo env (createOrgRepository opt) $ \r ->
+      withCreatedRepo env (createOrgRepository (orgOpt org name)) $ \r ->
         repoName r `shouldBe` name
+
+    it "sets the organisation as the repository owner" $ \env -> do
+      name <- uniqueName "hspec-org-owner"
+      withCreatedRepo env (createOrgRepository (orgOpt org name)) $ \r ->
+        userLogin (repoOwner r) `shouldBe` org
+
+    it "returns ErrConflict when the repository already exists" $ \env -> do
+      name <- uniqueName "hspec-org-dup"
+      withCreatedRepo env (createOrgRepository (orgOpt org name)) $ \_ -> do
+        result <- runForgejo env (createOrgRepository (orgOpt org name))
+        result `shouldSatisfy` \case
+          Left ErrConflict{} -> True
+          _ -> False
+
+    it "returns ErrValidation for a nonexistent organisation" $ \env -> do
+      name <- uniqueName "hspec-org-ghost"
+      result <- runForgejo env (createOrgRepository (orgOpt "org-xyz-does-not-exist" name))
+      result `shouldSatisfy` \case
+        Left ErrValidation{} -> True
+        _ -> False
+ where
+  orgOpt :: Text -> Text -> CreateOrgRepositoryOption
+  orgOpt org name = CreateOrgRepositoryOption org (CreateRepositoryOption "org integration test" name False)

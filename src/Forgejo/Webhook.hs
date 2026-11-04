@@ -73,8 +73,9 @@ parseWebhookPayload ActionRunSuccess v = Just . WPActionRun <$> parseEither pars
 parseWebhookPayload Release v = Just . WPRelease <$> parseEither parseJSON v
 parseWebhookPayload _ _ = Right Nothing
 
--- | Route of the webhook receiver. It answers nothing, Forgejo only looks at the status code.
---   @body@ is how the request body is read, it has to give a 'Value'.
+{- | Route of the webhook receiver. It answers nothing, Forgejo only looks at the status code.
+  @body@ is how the request body is read, it has to give a 'Value'.
+-}
 type WebhookAPI body =
   FGEvent :> FGEventTy :> FGDelivery :> body :> Post '[JSON] ()
 

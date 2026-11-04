@@ -16,6 +16,7 @@ import Forgejo.Types.Repository (Repository)
   * 'ErrForbidden': token lacks org repo creation permission
   * 'ErrNotFound': organisation does not exist
   * 'ErrConflict': repository with that name already exists
+  * 'ErrValidation': organisation does not exist, or the repository name or settings are invalid
 -}
 createOrgRepository :: CreateOrgRepositoryOption -> AppM Repository
 createOrgRepository CreateOrgRepositoryOption{..} = do

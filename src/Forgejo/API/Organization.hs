@@ -6,6 +6,7 @@ import Data.Text (Text)
 import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
 import Forgejo.Types.APINotFound (APINotFound)
+import Forgejo.Types.APIValidationError (APIValidationError)
 import Forgejo.Types.CreateRepositoryOption (CreateRepositoryOption)
 import Forgejo.Types.Repository (Repository)
 import GHC.Generics (Generic)
@@ -26,6 +27,7 @@ data OrgRoutes route = OrgRoutes
                 , WithStatus 403 APIForbiddenError
                 , WithStatus 404 APINotFound
                 , WithStatus 409 APIError
+                , WithStatus 422 APIValidationError
                 ]
   -- ^ POST /org/{org}/repos
   }
