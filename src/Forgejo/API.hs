@@ -5,7 +5,7 @@ module Forgejo.API
   ) where
 
 import Data.Text (Text)
-import Forgejo.API.CommitStatus (CommitStatusRoutes)
+import Forgejo.API.Commit (CommitRoutes)
 import Forgejo.API.Issue (IssueRoutes)
 import Forgejo.API.OrgMembers (OrgMembersRoutes)
 import Forgejo.API.Organization (OrgRoutes)
@@ -18,13 +18,13 @@ import Servant (Header', NamedRoutes, Required, Strict, type (:-), type (:>))
 type AuthHeader = Header' '[Required, Strict] "Authorization" Text
 
 data ForgejoRoutes route = ForgejoRoutes
-  { issues :: route :- NamedRoutes IssueRoutes
+  { commits :: route :- NamedRoutes CommitRoutes
+  , issues :: route :- NamedRoutes IssueRoutes
   , orgs :: route :- NamedRoutes OrgRoutes
   , orgMembers :: route :- NamedRoutes OrgMembersRoutes
   , pulls :: route :- NamedRoutes PullRequestRoutes
   , releases :: route :- NamedRoutes ReleaseRoutes
   , repos :: route :- NamedRoutes RepoRoutes
-  , statuses :: route :- NamedRoutes CommitStatusRoutes
   }
   deriving stock (Generic)
 

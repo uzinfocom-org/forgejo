@@ -19,7 +19,7 @@ library
   exposed-modules:
     Forgejo
     Forgejo.API
-    Forgejo.API.CommitStatus
+    Forgejo.API.Commit
     Forgejo.API.Issue
     Forgejo.API.Organization
     Forgejo.API.OrgMembers
@@ -28,7 +28,7 @@ library
     Forgejo.API.Repository
     Forgejo.App
     Forgejo.Error
-    Forgejo.Methods.CommitStatus
+    Forgejo.Methods.Commit
     Forgejo.Methods.Issue
     Forgejo.Methods.Organization
     Forgejo.Methods.OrgMembers

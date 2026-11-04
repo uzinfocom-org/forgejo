@@ -51,7 +51,7 @@ module Forgejo
 
 import Forgejo.App (AppEnv, mkAppEnv, runAppM, runForgejo)
 import Forgejo.Error (ForgejoError (..))
-import Forgejo.Methods.CommitStatus (createCommitStatus)
+import Forgejo.Methods.Commit (createCommitStatus)
 import Forgejo.Methods.Issue (createIssue)
 import Forgejo.Methods.OrgMembers (getOrgMember)
 import Forgejo.Methods.Organization (createOrgRepository)
