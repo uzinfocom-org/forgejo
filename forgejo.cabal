@@ -326,6 +326,7 @@ test-suite forgejo-test
     Forgejo.Integration.Helpers
     Forgejo.Integration.Issue
     Forgejo.Integration.Organization
+    Forgejo.Integration.OrgMembers
     Forgejo.Integration.Repository
     Forgejo.IntegrationSpec
     Forgejo.Types.EventSpec

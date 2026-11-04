@@ -30,28 +30,28 @@ spec = do
                 r.repoName
                 issue.issueNumber
                 (CreateIssueCommentApiOption "integration test comment")
-        result <- runForgejo env (createIssueComment opt)
+        result <- runForgejo env $ createIssueComment opt
         case result of
-          Left err -> expectationFailure (show err)
+          Left err -> expectationFailure $ show err
           Right c -> c.commentBody `shouldBe` "integration test comment"
 
   describe "createIssueComment"
     $ aroundAllWith withIssue
     $ do
       it "creates a comment on the issue" $ \(env, r, issue) -> do
-        result <- runForgejo env (createIssueComment (commentOpt r issue.issueNumber "integration test comment"))
+        result <- runForgejo env . createIssueComment $ commentOpt r issue.issueNumber "integration test comment"
         case result of
-          Left err -> expectationFailure (show err)
+          Left err -> expectationFailure $ show err
           Right c -> c.commentBody `shouldBe` "integration test comment"
 
       it "returns ErrValidation for an empty comment body" $ \(env, r, issue) -> do
-        result <- runForgejo env (createIssueComment (commentOpt r issue.issueNumber ""))
+        result <- runForgejo env . createIssueComment $ commentOpt r issue.issueNumber ""
         result `shouldSatisfy` \case
           Left ErrValidation{} -> True
           _ -> False
 
       it "returns ErrNotFound for a nonexistent issue index" $ \(env, r, _) -> do
-        result <- runForgejo env (createIssueComment (commentOpt r 999999 "ghost"))
+        result <- runForgejo env . createIssueComment $ commentOpt r 999999 "ghost"
         result `shouldSatisfy` \case
           Left ErrNotFound{} -> True
           _ -> False
@@ -62,8 +62,8 @@ spec = do
             CreateIssueOption
               "owner-xyz-does-not-exist"
               "repo-xyz"
-              (CreateIssueApiOption "t" Nothing [] Nothing Nothing Nothing Nothing Nothing)
-      result <- runForgejo env (createIssue opt)
+              $ CreateIssueApiOption "t" Nothing [] Nothing Nothing Nothing Nothing Nothing
+      result <- runForgejo env $ createIssue opt
       result `shouldSatisfy` \case
         Left ErrNotFound{} -> True
         _ -> False
@@ -74,7 +74,7 @@ spec = do
               "owner-xyz-does-not-exist"
               "repo-xyz"
               1
-              (CreateIssueCommentApiOption "t")
+              $ CreateIssueCommentApiOption "t"
       result <- runForgejo env (createIssueComment opt)
       result `shouldSatisfy` \case
         Left ErrNotFound{} -> True
@@ -96,7 +96,7 @@ deleting the repository once every test in the group has run.
 withIssue :: ((AppEnv, Repository, Issue) -> IO ()) -> AppEnv -> IO ()
 withIssue action env = do
   name <- uniqueName "hspec-issues"
-  withCreatedRepo env (createRepository (CreateRepositoryOption "issue integration tests" name False)) $ \r -> do
+  withCreatedRepo env (createRepository $ CreateRepositoryOption "issue integration tests" name False) $ \r -> do
     issue <- setupIssue env r
     action (env, r, issue)
 
@@ -113,7 +113,7 @@ setupIssue env r = do
             Nothing
             Nothing
             Nothing
-  result <- runForgejo env (createIssue opt)
+  result <- runForgejo env $ createIssue opt
   case result of
-    Left err -> fail ("setup failed: " <> show err)
+    Left err -> fail $ "setup failed: " <> show err
     Right issue -> pure issue

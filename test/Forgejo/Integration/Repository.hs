@@ -13,7 +13,7 @@ spec = do
   describe "deleteRepository" $ do
     it "creates a repository with the given name" $ \env -> do
       name <- uniqueName "hspec-repo"
-      withCreatedRepo env (createRepository (CreateRepositoryOption "integration test" name False)) $ \r -> do
+      withCreatedRepo env (createRepository $ CreateRepositoryOption "integration test" name False) $ \r -> do
         liftIO $ print $ repoName r
         repoName r `shouldBe` name
 
