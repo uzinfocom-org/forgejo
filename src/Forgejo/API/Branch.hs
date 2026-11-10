@@ -1,6 +1,6 @@
 module Forgejo.API.Branch
   ( BranchRoutes (..)
-  , CreateBranchRepoOption (..)
+  , CreateBranchApiOption (..)
   ) where
 
 import Data.Aeson (ToJSON (..), Value, genericToJSON)
@@ -21,7 +21,7 @@ data BranchRoutes route = BranchRoutes
           :> Capture "owner" Text
           :> Capture "repo" Text
           :> "branches"
-          :> ReqBody '[JSON] CreateBranchRepoOption
+          :> ReqBody '[JSON] CreateBranchApiOption
           :> UVerb
                'POST
                '[JSON]
@@ -35,11 +35,11 @@ data BranchRoutes route = BranchRoutes
   }
   deriving stock (Generic)
 
-data CreateBranchRepoOption = CreateBranchRepoOption
+data CreateBranchApiOption = CreateBranchApiOption
   { newBranchName :: Text
   , oldRefName :: Maybe Text
   }
   deriving stock (Eq, Generic, Show)
 
-instance ToJSON CreateBranchRepoOption where
-  toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_', omitNothingFields = True}
+instance ToJSON CreateBranchApiOption where
+  toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_'}

@@ -62,7 +62,6 @@ library
     Forgejo.Types.Attachment
     Forgejo.Types.BlockedUser
     Forgejo.Types.Branch
-    Forgejo.Types.BranchProtection
     Forgejo.Types.ChangedFile
     Forgejo.Types.ChangeFileOperation
     Forgejo.Types.ChangeFilesOptions
@@ -77,11 +76,9 @@ library
     Forgejo.Types.CommitUser
     Forgejo.Types.Common
     Forgejo.Types.Compare
-    Forgejo.Types.ContentsResponse
     Forgejo.Types.ContentTypes
     Forgejo.Types.CreateAccessTokenOption
     Forgejo.Types.CreateBranchProtectionOption
-    Forgejo.Types.CreateBranchRepoOption
     Forgejo.Types.CreateEmailOption
     Forgejo.Types.CreateFileOptions
     Forgejo.Types.CreateForkOption
@@ -141,11 +138,7 @@ library
     Forgejo.Types.EventType
     Forgejo.Types.ExternalTracker
     Forgejo.Types.ExternalWiki
-    Forgejo.Types.FileCommitResponse
-    Forgejo.Types.FileDeleteResponse
     Forgejo.Types.FileLinksResponse
-    Forgejo.Types.FileResponse
-    Forgejo.Types.FilesResponse
     Forgejo.Types.GeneralAPISettings
     Forgejo.Types.GeneralAttachmentSettings
     Forgejo.Types.GeneralRepoOption
@@ -156,7 +149,6 @@ library
     Forgejo.Types.GitHook
     Forgejo.Types.GitignoreTemplateInfo
     Forgejo.Types.GitObject
-    Forgejo.Types.GitTreeResponse
     Forgejo.Types.GPGKey
     Forgejo.Types.GPGKeyEmail
     Forgejo.Types.Hook

@@ -3,7 +3,7 @@ module Forgejo.Methods.Branch (createBranch) where
 import Control.Monad (void)
 import Data.Text (Text)
 import Forgejo.API (ForgejoRoutes (branches))
-import Forgejo.API.Branch (BranchRoutes (createBranchApi), CreateBranchRepoOption (..))
+import Forgejo.API.Branch (BranchRoutes (createBranchApi), CreateBranchApiOption (..))
 import Forgejo.App (AppM, forgejo)
 import Forgejo.Error
 
@@ -18,4 +18,4 @@ import Forgejo.Error
 createBranch :: Text -> Text -> Text -> Text -> AppM ()
 createBranch owner repo from new = do
   fg <- forgejo
-  void $ createBranchApi (branches fg) owner repo (CreateBranchRepoOption new (Just from)) >>= liftResult
+  void $ createBranchApi (branches fg) owner repo (CreateBranchApiOption new (Just from)) >>= liftResult
