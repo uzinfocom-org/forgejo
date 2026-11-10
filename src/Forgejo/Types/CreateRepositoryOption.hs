@@ -14,6 +14,7 @@ data CreateRepositoryOption = CreateRepositoryOption
   { croDescription :: Text
   , croName :: Text
   , croPrivate :: Bool
+  , croAutoInit :: Bool
   }
   deriving stock (Eq, Generic, Show)
 

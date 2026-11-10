@@ -6,6 +6,7 @@ import Forgejo (AppEnv, mkAppEnv)
 import Forgejo.Integration.Commit qualified as Commit
 import Forgejo.Integration.Issue qualified as Issue
 import Forgejo.Integration.Organization qualified as Organization
+import Forgejo.Integration.PullRequest qualified as PullRequest
 import Forgejo.Integration.Repository qualified as Repository
 import Network.HTTP.Client.TLS (newTlsManager)
 import Servant.Client (mkClientEnv, parseBaseUrl)
@@ -30,6 +31,7 @@ spec = do
         describe "Commit" Commit.spec
         describe "Repository" Repository.spec
         describe "Issue" Issue.spec
+        describe "Pull Request" PullRequest.spec
         describe "Organization" (Organization.spec (T.pack <$> mOrg))
     _ ->
       it "integration tests (set FG_URL and FG_TOKEN to enable)" pending

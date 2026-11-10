@@ -60,7 +60,7 @@ deleting the repository once every test in the group has run.
 withIssue :: ((AppEnv, Repository, Issue) -> IO ()) -> AppEnv -> IO ()
 withIssue action env = do
   name <- uniqueName "hspec-issues"
-  withCreatedRepo env (createRepository $ CreateRepositoryOption "issue integration tests" name False) $ \r -> do
+  withCreatedRepo env (createRepository $ CreateRepositoryOption "issue integration tests" name False False) $ \r -> do
     issue <- setupIssue env r
     action (env, r, issue)
 

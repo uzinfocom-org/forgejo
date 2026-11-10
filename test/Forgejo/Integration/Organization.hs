@@ -54,4 +54,4 @@ spec (Just org) = do
         _ -> False
  where
   orgOpt :: Text -> Text -> CreateOrgRepositoryOption
-  orgOpt orgn name = CreateOrgRepositoryOption orgn (CreateRepositoryOption "org integration test" name False)
+  orgOpt orgn name = CreateOrgRepositoryOption orgn (CreateRepositoryOption "org integration test" name False False)

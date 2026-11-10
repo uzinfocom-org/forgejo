@@ -12,10 +12,11 @@ import Test.Hspec
 
 spec :: SpecWith AppEnv
 spec =
-  describe "createCommitStatus" $ do
-    it "returns ErrNotFound for a nonexistent sha in an existing repository" $ \env -> do
+  describe "createCommitStatus"
+    $ it "returns ErrNotFound for a nonexistent sha in an existing repository"
+    $ \env -> do
       name <- uniqueName "hspec-commit"
-      withCreatedRepo env (createRepository $ CreateRepositoryOption "commit tests" name False) $ \r -> do
+      withCreatedRepo env (createRepository $ CreateRepositoryOption "commit tests" name False False) $ \r -> do
         result <- runForgejo env $ createCommitStatus r.repoOwner.userLogin r.repoName missingSha statusOpt
         result `shouldSatisfy` \case
           Left ErrNotFound{} -> True

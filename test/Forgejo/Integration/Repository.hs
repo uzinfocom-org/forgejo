@@ -12,12 +12,12 @@ spec = do
   describe "createRepository" $ do
     it "creates a repository with the given name" $ \env -> do
       name <- uniqueName "hspec-repo"
-      withCreatedRepo env (createRepository $ CreateRepositoryOption "integration test" name False) $ \r -> do
+      withCreatedRepo env (createRepository $ CreateRepositoryOption "integration test" name False False) $ \r ->
         repoName r `shouldBe` name
 
     it "returns ErrConflict when the repository already exists" $ \env -> do
       name <- uniqueName "hspec-dup"
-      let opt = CreateRepositoryOption "dup test" name False
+      let opt = CreateRepositoryOption "dup test" name False False
       withCreatedRepo env (createRepository opt) $ \_ -> do
         result <- runForgejo env $ createRepository opt
         result `shouldSatisfy` \case
@@ -25,7 +25,7 @@ spec = do
           _ -> False
 
     it "returns ErrValidation for an invalid repository name" $ \env -> do
-      result <- runForgejo env . createRepository $ CreateRepositoryOption "bad name" "not a valid/name!" False
+      result <- runForgejo env . createRepository $ CreateRepositoryOption "bad name" "not a valid/name!" False False
       result `shouldSatisfy` \case
         Left ErrValidation{} -> True
         _ -> False
@@ -33,7 +33,7 @@ spec = do
   describe "deleteRepository" $ do
     it "deletes an existing repository" $ \env -> do
       name <- uniqueName "hspec-del"
-      created <- runForgejo env . createRepository $ CreateRepositoryOption "delete test" name False
+      created <- runForgejo env . createRepository $ CreateRepositoryOption "delete test" name False False
       case created of
         Left e -> expectationFailure $ "setup failed: " <> show e
         Right r -> do
@@ -44,7 +44,7 @@ spec = do
 
     it "returns ErrNotFound when deleting the same repository twice" $ \env -> do
       name <- uniqueName "hspec-del2"
-      created <- runForgejo env . createRepository $ CreateRepositoryOption "delete twice" name False
+      created <- runForgejo env . createRepository $ CreateRepositoryOption "delete twice" name False False
       case created of
         Left e -> expectationFailure $ "setup failed: " <> show e
         Right r -> do

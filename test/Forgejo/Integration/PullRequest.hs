@@ -70,7 +70,7 @@ withPullRequest :: ((AppEnv, Repository, PullRequest) -> IO ()) -> AppEnv -> IO 
 withPullRequest action env = do
   name <- uniqueName "hspec-pulls"
   -- NOTE: needs an initial commit on @main@, so the repository must be auto-initialised.
-  withCreatedRepo env (createRepository $ CreateRepositoryOption "pull request integration tests" name True) $ \r -> do
+  withCreatedRepo env (createRepository $ CreateRepositoryOption "pull request integration tests" name True True) $ \r -> do
     createBranch env r "main" "feature"
     commitFile env r "feature" "a.txt" "add a.txt"
     commitFile env r "feature" "b.txt" "add b.txt"
