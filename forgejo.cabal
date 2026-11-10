@@ -19,7 +19,9 @@ library
   exposed-modules:
     Forgejo
     Forgejo.API
+    Forgejo.API.Branch
     Forgejo.API.Commit
+    Forgejo.API.Contents
     Forgejo.API.Issue
     Forgejo.API.Organization
     Forgejo.API.OrgMembers
@@ -28,7 +30,9 @@ library
     Forgejo.API.Repository
     Forgejo.App
     Forgejo.Error
+    Forgejo.Methods.Branch
     Forgejo.Methods.Commit
+    Forgejo.Methods.Contents
     Forgejo.Methods.Issue
     Forgejo.Methods.Organization
     Forgejo.Methods.OrgMembers
@@ -273,6 +277,7 @@ library
   build-depends:
     , aeson
     , base
+    , base64-bytestring
     , bytestring
     , conduit
     , conduit-combinators
@@ -326,7 +331,7 @@ test-suite forgejo-test
     Forgejo.Integration.Helpers
     Forgejo.Integration.Issue
     Forgejo.Integration.Organization
-    Forgejo.Integration.OrgMembers
+    Forgejo.Integration.PullRequest
     Forgejo.Integration.Repository
     Forgejo.IntegrationSpec
     Forgejo.Types.EventSpec

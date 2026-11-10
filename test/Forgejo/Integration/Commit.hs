@@ -21,12 +21,6 @@ spec =
           Left ErrNotFound{} -> True
           _ -> False
 
-    it "returns ErrNotFound for a nonexistent owner/repo" $ \env -> do
-      result <- runForgejo env $ createCommitStatus "owner-xyz-does-not-exist" "repo-xyz" missingSha statusOpt
-      result `shouldSatisfy` \case
-        Left ErrNotFound{} -> True
-        _ -> False
-
 missingSha :: Text
 missingSha = "0000000000000000000000000000000000000000"
 

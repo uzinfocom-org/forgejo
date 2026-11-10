@@ -1,10 +1,14 @@
 module Forgejo.Integration.Organization (spec) where
 
 import Data.Text (Text)
-import Forgejo (AppEnv, ForgejoError (..), User (..), createOrgRepository, getOrgMember, runForgejo)
+import Forgejo.App (AppEnv, runForgejo)
+import Forgejo.Error (ForgejoError (..))
 import Forgejo.Integration.Helpers (uniqueName, withCreatedRepo)
+import Forgejo.Methods.OrgMembers (getOrgMember)
+import Forgejo.Methods.Organization (createOrgRepository)
 import Forgejo.Types.CreateRepositoryOption (CreateOrgRepositoryOption (..), CreateRepositoryOption (..))
 import Forgejo.Types.Repository (Repository (..))
+import Forgejo.Types.User (User (..))
 import Test.Hspec
 
 spec :: Maybe Text -> SpecWith AppEnv
@@ -50,4 +54,4 @@ spec (Just org) = do
         _ -> False
  where
   orgOpt :: Text -> Text -> CreateOrgRepositoryOption
-  orgOpt org name = CreateOrgRepositoryOption org (CreateRepositoryOption "org integration test" name False)
+  orgOpt orgn name = CreateOrgRepositoryOption orgn (CreateRepositoryOption "org integration test" name False)

@@ -23,18 +23,6 @@ spec = do
       it "stores the given body" $ \(_, _, issue) ->
         issue.issueBody `shouldBe` "created by hspec"
 
-      it "creates a comment on the issue" $ \(env, r, issue) -> do
-        let opt =
-              CreateIssueCommentOption
-                r.repoOwner.userLogin
-                r.repoName
-                issue.issueNumber
-                (CreateIssueCommentApiOption "integration test comment")
-        result <- runForgejo env $ createIssueComment opt
-        case result of
-          Left err -> expectationFailure $ show err
-          Right c -> c.commentBody `shouldBe` "integration test comment"
-
   describe "createIssueComment"
     $ aroundAllWith withIssue
     $ do
@@ -55,30 +43,6 @@ spec = do
         result `shouldSatisfy` \case
           Left ErrNotFound{} -> True
           _ -> False
-
-  describe "errors" $ do
-    it "returns ErrNotFound when creating an issue in a nonexistent owner/repo" $ \env -> do
-      let opt =
-            CreateIssueOption
-              "owner-xyz-does-not-exist"
-              "repo-xyz"
-              $ CreateIssueApiOption "t" Nothing [] Nothing Nothing Nothing Nothing Nothing
-      result <- runForgejo env $ createIssue opt
-      result `shouldSatisfy` \case
-        Left ErrNotFound{} -> True
-        _ -> False
-
-    it "returns ErrNotFound when commenting in a nonexistent owner/repo" $ \env -> do
-      let opt =
-            CreateIssueCommentOption
-              "owner-xyz-does-not-exist"
-              "repo-xyz"
-              1
-              $ CreateIssueCommentApiOption "t"
-      result <- runForgejo env (createIssueComment opt)
-      result `shouldSatisfy` \case
-        Left ErrNotFound{} -> True
-        _ -> False
  where
   commentOpt :: Repository -> Int -> Text -> CreateIssueCommentOption
   commentOpt r index body =

@@ -5,7 +5,9 @@ module Forgejo.API
   ) where
 
 import Data.Text (Text)
+import Forgejo.API.Branch (BranchRoutes)
 import Forgejo.API.Commit (CommitRoutes)
+import Forgejo.API.Contents (ContentsRoutes)
 import Forgejo.API.Issue (IssueRoutes)
 import Forgejo.API.OrgMembers (OrgMembersRoutes)
 import Forgejo.API.Organization (OrgRoutes)
@@ -18,7 +20,9 @@ import Servant (Header', NamedRoutes, Required, Strict, type (:-), type (:>))
 type AuthHeader = Header' '[Required, Strict] "Authorization" Text
 
 data ForgejoRoutes route = ForgejoRoutes
-  { commits :: route :- NamedRoutes CommitRoutes
+  { branches :: route :- NamedRoutes BranchRoutes
+  , commits :: route :- NamedRoutes CommitRoutes
+  , contents :: route :- NamedRoutes ContentsRoutes
   , issues :: route :- NamedRoutes IssueRoutes
   , orgs :: route :- NamedRoutes OrgRoutes
   , orgMembers :: route :- NamedRoutes OrgMembersRoutes
