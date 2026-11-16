@@ -2,9 +2,7 @@ module Forgejo.Methods.Contents (createFile) where
 
 import Control.Monad (void)
 import Data.ByteString (ByteString)
-import Data.ByteString.Base64 (encode)
 import Data.Text (Text)
-import Data.Text.Encoding (decodeUtf8, encodeUtf8)
 import Forgejo.API (ForgejoRoutes (contents))
 import Forgejo.API.Contents (ContentsRoutes (createFileApi), CreateFileApiOption (..))
 import Forgejo.App (AppM, forgejo)
@@ -31,7 +29,7 @@ createFile
   -> Text
   -- | commit message
   -> Text
-  -- | file content
+  -- | file content -- utf-8 bytestring
   -> ByteString
   -> AppM ()
 createFile owner repo path branch message content = do

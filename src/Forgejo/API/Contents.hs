@@ -51,7 +51,7 @@ data CreateFileApiOption = CreateFileApiOption
 instance ToJSON CreateFileApiOption where
   toJSON o =
     object
-      [ fromString "content" .= decodeUtf8 (encode (createFileContent o))
-      , fromString "message" .= createFileMessage o
-      , fromString "branch" .= createFileBranch o
+      [ fromString "content" .= (decodeUtf8 . encode) o.createFileContent
+      , fromString "message" .= o.createFileMessage
+      , fromString "branch" .= o.createFileBranch
       ]
