@@ -3,9 +3,12 @@ module Forgejo.API.Contents
   , CreateFileApiOption (..)
   ) where
 
-import Data.Aeson (ToJSON (..), Value, genericToJSON)
-import Data.Aeson.Types (Options (..), camelTo2, defaultOptions)
+import Data.Aeson (ToJSON (..), Value, object, (.=))
+import Data.Aeson.Key (fromString)
+import Data.ByteString (ByteString)
+import Data.ByteString.Base64 (encode)
 import Data.Text (Text)
+import Data.Text.Encoding (decodeUtf8)
 import Forgejo.Types.APIError (APIError)
 import Forgejo.Types.APIForbiddenError (APIForbiddenError)
 import Forgejo.Types.APINotFound (APINotFound)
@@ -37,7 +40,7 @@ data ContentsRoutes route = ContentsRoutes
   deriving stock (Generic)
 
 data CreateFileApiOption = CreateFileApiOption
-  { createFileContent :: Text
+  { createFileContent :: ByteString
   -- ^ Base64 encoded content
   , createFileMessage :: Text
   -- ^ Commit message
@@ -46,4 +49,9 @@ data CreateFileApiOption = CreateFileApiOption
   deriving stock (Eq, Generic, Show)
 
 instance ToJSON CreateFileApiOption where
-  toJSON = genericToJSON defaultOptions{fieldLabelModifier = camelTo2 '_' . drop 10}
+  toJSON o =
+    object
+      [ fromString "content" .= decodeUtf8 (encode (createFileContent o))
+      , fromString "message" .= createFileMessage o
+      , fromString "branch" .= createFileBranch o
+      ]

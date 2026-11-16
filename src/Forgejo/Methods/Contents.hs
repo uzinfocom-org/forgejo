@@ -1,6 +1,7 @@
 module Forgejo.Methods.Contents (createFile) where
 
 import Control.Monad (void)
+import Data.ByteString (ByteString)
 import Data.ByteString.Base64 (encode)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
@@ -31,9 +32,9 @@ createFile
   -- | commit message
   -> Text
   -- | file content
-  -> Text
+  -> ByteString
   -> AppM ()
 createFile owner repo path branch message content = do
   fg <- forgejo
-  let opt = CreateFileApiOption (decodeUtf8 . encode $ encodeUtf8 content) message branch
+  let opt = CreateFileApiOption content message branch
   void $ createFileApi (contents fg) owner repo path opt >>= liftResult

@@ -333,6 +333,7 @@ test-suite forgejo-test
   build-depends:
     , aeson
     , base
+    , bytestring
     , forgejo
     , hspec
     , hspec-wai
